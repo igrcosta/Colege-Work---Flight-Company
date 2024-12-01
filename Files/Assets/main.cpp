@@ -403,6 +403,12 @@ public:
         std::cin >> tarifa;
 
         cadastrarVoo(nomeArquivo);
+
+    }
+
+    //Método para ver o status do voo, utilizamos isso para reservar o voo
+    bool getstatus () const {
+    return status;
     }
 
     // Método para cadastrar voo em um arquivo
@@ -449,10 +455,9 @@ public:
 
 int CadastroAssento(class ASSENTO &assento) {
   cout<<"---------- Cadastro de Assento Selecionado ----------\n"<<endl;
-    return 0;
 };
 
-/*
+/* parte ana */
 
 struct ReservaInfo {
     int codigoVoo;
@@ -460,8 +465,8 @@ struct ReservaInfo {
     int codigoPassageiro;
 };
 
-void CadastrarReserva(const Voo &voo, ASSENTO &assento, const PASSAGEIRO &passageiro){
-    if(!voo.getStatus()){
+void CadastrarReserva(const Voo &Voo, ASSENTO &assento, const PASSAGEIRO &passageiro){
+    if(!Voo.getstatus()){
         cout<<"Reserva falhou. O voo não está ativo.\n";
         return;
     }
@@ -547,12 +552,7 @@ void VerificarReserva(int codigoVoo, int numeroAssento){
     }
 }
 
-*/
 
-int VerificarReserva(class RESERVA &reserva) {
-  cout<<"---------- Verificação de Reservas Selecionado ----------\n"<<endl;
-    return 0;
-};
 
 int BaixarReserva(class RESERVA &reserva) {
   cout<<"---------- Baixar Reservas Selecionado ----------\n"<<endl;
@@ -563,6 +563,7 @@ int PesquisarPessoa(class PASSAGEIRO &passageiro, class TRIPULACAO &tripulacao) 
   cout<<"---------- Pesquisa de Pessoa Selecionado ----------\n"<<endl;
     return 0;
 };
+
 
 int escolhaFuncao(int escolha){
 
