@@ -463,6 +463,99 @@ int CadastroAssento(class ASSENTO &assento) {
     return 0;
 };
 
+struct ReservaInfo {
+    int codigoVoo;
+    int numeroAssento;
+    int codigoPassageiro;
+};
+
+void CadastrarReserva(const VOO &voo, ASSENTO &assento, const PASSAGEIRO &passageiro){
+    if(!voo.getStatus()){
+        cout<<"Reserva falhou. O voo não está ativo.\n";
+        return;
+    }
+
+    if(!assento.getStatus()){
+        cout<<"Reserva falhou: O assento já está ocupado.\n";
+        return;
+    }
+
+    ReservaInfo novaReserva = {voo.getCodigoVoo(), assento.getNumeroAssento(), passageiro.getCodigoPassageiro()};
+
+    ifstream arquivoLeitura("reservas.dat", ios::binary);
+    ReservaInfo reservaExistente;
+
+    while(arquivoLeitura.read((char*)&reservaExistente, sizeof(ReservaInfo))) {
+        if(reservaExistente.codigoVoo == novaReserva.codigoVoo && reservaExistente.numeroAssento == novaReserva.numeroAssento){
+            cout<<"Reserva falhou: Duplicidade de assento no mesmo voo.\n";
+            arquivoLeitura.close();
+            return;
+        }
+    }
+    arquivoLeitura.close();
+
+    // atualizar o status do assento e salvar a reserva
+    ofstream arquivoEscrita("reservas.dat", ios::binary | ios::app);
+    arquivoEscrita.write((char*)&novaReserva, sizeof(ReservaInfo));
+    assento.setStatus(false);
+    cout << "Reserva realizada com sucesso!\n";
+}
+
+void BaixarReserva(int codigoVoo, int numeroAssento){
+    ifstream arquivoLeitura("reservas.dat", ios::binary);
+    ofstream arquivoTemporario("reservas_temp.dat", ios::binary);
+    ReservaInfo reserva;
+    bool reservaEncontrada = false;
+
+    // procurar a reserva e copiar todas as outras para o arquivo temporário
+    while(arquivoLeitura.read((char*)&reserva, sizeof(ReservaInfo))){
+        if(reserva.codigoVoo == codigoVoo && reserva.numeroAssento == numeroAssento){
+            reservaEncontrada = true;
+
+            ASSENTO assento;
+            assento.setNumeroAssento(numeroAssento);
+            assento.setStatus(true);
+            cout<<"Reserva cancelada. Assento liberado\n";
+        } else {
+            arquivoTemporario.write((char*)&reserva, sizeof(ReservaInfo));
+        }
+    }
+    arquivoLeitura.close();
+    arquivoTemporario.close();
+
+    if(reservaEncontrada){
+        remove("reservas.dat");
+        rename("reservas_temp.dat", "reservas.dat");
+
+        VOO voo;
+        voo.setCodigoVoo(codigoVoo);
+        float valorPagamento = voo.getTarifa();
+        cout<<"Valor total a ser pago: R$ "<<valorPagamento<<endl;
+    } else {
+        remove("reservar_temp.dat");
+        cout<<"Reserva não encontrada para este assento e voo.\n";
+    }
+}
+
+void VerificarReserva(int codigoVoo, int numeroAssento){
+    ifstream arquivoLeitura("reservas.dat", ios::binary);
+    ReservaInfo reserva;
+    bool reservaEncontrada = false;
+
+    while(arquivoLeitura.read((char*)&reserva, sizeof(ReservaInfo))){
+        if(reserva.codigoVoo == codigoVoo && reserva.numeroAssento == numeroAssento){
+            cout<<"Reserva encontrada! Código do Passageiro: "<<reserva.codigoPassageiro<<endl;
+            reservaEncontrada = true;
+            break;
+        }
+    }
+    arquivoLeitura.close();
+
+    if(!reservaEncontrada){
+        cout<<"Nenhuma reserva encontrada para este assento e voo\n";
+    }
+}
+
 int VerificarReserva(class RESERVA &reserva) {
   cout<<"---------- Verificação de Reservas Selecionado ----------\n"<<endl;
     return 0;
@@ -492,8 +585,23 @@ int escolhaFuncao(int escolha){
   case 2: CadastroTripulacao(tripulacao); break;
   case 3: CadastroVoo(voo); break;
   case 4: CadastroAssento(assento); break;
-  case 5: VerificarReserva(reserva); break;
-  case 6: BaixarReserva(reserva); break;
+  case 5: 
+    cout<<"Digite o código do voo: ";
+    cin>>voo.codigoVoo;
+    cout<<"Digite o número do assento: ";
+    cin>>assento.numeroAssento;
+    // cout<<"Digite o código do passageiro: ";
+    // cin>>passageiro.codigo;
+    CadastrarReserva(voo, assento, passageiro);
+    break;
+    //VerificarReserva(reserva); break;
+  case 6: 
+    cout<<"Digite o código do voo para cancelar a reserva: ";
+    cin>>voo.codigoVoo;
+    cout<<"Digite o número do assento a ser liberado: ";
+    cin>>assento.numeroAssento;
+    BaixarReserva(voo.codigoVoo, assento.numeroAssento); 
+    break;
   case 7: PesquisarPessoa(passageiro,tripulacao); break;
   case 0: cout << "Saindo...\nTe vejo em breve..." << endl; return -1;
   default: cout <<"Opção invalida, escolha uma opção de 1 a 7"<<endl; return escolha;
@@ -516,7 +624,7 @@ void exibirmenu(){
            << "2 - Cadastrar Tripulação\n"
            << "3 - Cadastrar Voos\n"
            << "4 - Cadastrar Assento\n"
-           << "5 - Verificar Reserva\n"
+           << "5 - Fazer Reserva\n"
            << "6 - Baixar Reserva\n"
            << "7 - Pesquisa de Pessoa\n"
            << "0 - Encerrar o Programa\n"
