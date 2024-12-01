@@ -19,12 +19,14 @@ protected:
 
 class PASSAGEIRO : protected Padroes
 {
+
 private:
     int pontosFidelidade;
     string endereco, telefone;
     bool fidelidade;
 
 public:
+
     void setCodigoPassageiro(int codigoPassageiro) { codigo = codigoPassageiro; }
     int getCodigoPassageiro() const { return codigo; }
 
@@ -42,6 +44,8 @@ public:
 
     void setFidelidadePassageiro(bool fidelidadePassageiro) { fidelidade = fidelidadePassageiro; }
     bool getFidelidadePassageiro() const { return fidelidade; }
+
+
 };
 
 class CARGO
@@ -333,12 +337,21 @@ public:
 
 // ************  --------------  FUNCOES   --------------  ************//
 
-
 int CadastroPassageiro(class PASSAGEIRO &passageiro) {
+
     setlocale(LC_ALL, "portuguese");
+    static int contadorCodigoPassageiro = 1000;
     int ficarOuSair;
 
-    ofstream arquivo("dadosPassageiros.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDEREÇO OU NOME
+    ifstream arquivoLeitura("arquivosPassageirosDados\\contadorCodigoPassageiro.txt");
+    if (arquivoLeitura.is_open()) {
+        arquivoLeitura >> contadorCodigoPassageiro;
+        arquivoLeitura.close();
+    } else {
+        contadorCodigoPassageiro = 1000;
+    }
+
+    ofstream arquivo("arquivosPassageirosDados\\dadosPassageiro.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDEREÇO OU NOME
     if (!arquivo.is_open()) {
         cerr << "Erro ao abrir o arquivo para salvar os passageiros!" << endl;
         return -1;
@@ -346,25 +359,23 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
 
     cout<<"---------- Cadastro de Passageiros Selecionado ----------\n"<<endl;
 
-
     do{
-
-        // nome do passageiro
+    ///---------- nome do passageiro ----------
         string nomePassageiro;
 
-            cout<< "\nDigite o nome do passageiro: ";
+            cout<< "Digite o nome do passageiro: ";
             cin.ignore();
             getline(cin, nomePassageiro);
             passageiro.setNomePassageiro(nomePassageiro);
 
 
-        // endereco do passageiro
+    ///---------- endereco do passageiro ----------
 
         ENDERECOPASSAGEIRO enderecoPassageiro;
         enderecoPassageiro.InserirEnderecoPassageiro();
 
 
-        // telefone do Passageiro
+    ///---------- telefone do Passageiro ----------
 
         string telefonePassageiro;
 
@@ -377,9 +388,9 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
     }
         passageiro.setTelefonePassageiro(telefonePassageiro);
 
-            // Fidelidade
+    ///---------- Fidelidade ----------
 
-        /*
+        /*---------- so remover aqui igor ----------
 
             bool fidelidade;
             int resposta;
@@ -402,19 +413,15 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
         cout << "Sem pontos de fidelidade, faça o seu primeiro voo para recebe-lo !!!" << endl;
     }
 
-    */
+    ---------- so remover aqui igor ---------- */
 
-                // codigo do passageiro
+    ///---------- codigo do passageiro ----------
 
-        int codigoPassageiro;
 
-        unsigned seed = time(0);
-        srand(seed);
+        passageiro.setCodigoPassageiro(contadorCodigoPassageiro++);
+        cout << "Código do Passageiro: " << passageiro.getCodigoPassageiro() << "\n";
 
-        codigoPassageiro = 1000 + rand() % 4001;
-        cout<<"Codigo do Passageiro: "<<codigoPassageiro<<"\n";
-        passageiro.setCodigoPassageiro(codigoPassageiro);
-
+    /// ---------- salvar em arquivo ----------
 
     arquivo << "Nome do Passageiro: " << nomePassageiro << endl;
     arquivo << "Endereco: "<< endl;
@@ -422,8 +429,9 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
             << "\nEstado: " << enderecoPassageiro.getEstadoPassageiro()
             << "\nCidade: " << enderecoPassageiro.getCidadePassageiro() << endl;
     arquivo << "Telefone do Passageiro: " << telefonePassageiro << endl;
-    arquivo << "Codigo do Passageiro: " << codigoPassageiro << endl;
+    arquivo << "Código: " << passageiro.getCodigoPassageiro() << endl;
     // arquivo << "Pontos de Fidelidade do Passageiro: " << pontosFidelidade << endl; IGOR, COMANDO PARA SALVAR NO ARQUIVO TXT
+    arquivo << " " << endl;
 
 
     cout << "\nPassageiro cadastrado com sucesso!\n";
@@ -444,6 +452,15 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
     }while(true);
 
     arquivo.close();
+
+    ofstream arquivoContador("arquivosPassageirosDados\\contadorCodigoPassageiro.txt");
+    if (arquivoContador.is_open()) {
+        arquivoContador << contadorCodigoPassageiro;
+        arquivoContador.close();
+    } else {
+        cerr << "Erro ao atualizar o contador de códigos!" << endl;
+        return -1;
+    }
 
     return 0;
 };
@@ -585,7 +602,7 @@ int escolhaFuncao(int escolha){
   case 2: CadastroTripulacao(tripulacao); break;
   case 3: CadastroVoo(voo); break;
   case 4: CadastroAssento(assento); break;
-  case 5: 
+  case 5:
     cout<<"Digite o código do voo: ";
     cin>>voo.codigoVoo;
     cout<<"Digite o número do assento: ";
@@ -595,12 +612,12 @@ int escolhaFuncao(int escolha){
     CadastrarReserva(voo, assento, passageiro);
     break;
     //VerificarReserva(reserva); break;
-  case 6: 
+  case 6:
     cout<<"Digite o código do voo para cancelar a reserva: ";
     cin>>voo.codigoVoo;
     cout<<"Digite o número do assento a ser liberado: ";
     cin>>assento.numeroAssento;
-    BaixarReserva(voo.codigoVoo, assento.numeroAssento); 
+    BaixarReserva(voo.codigoVoo, assento.numeroAssento);
     break;
   case 7: PesquisarPessoa(passageiro,tripulacao); break;
   case 0: cout << "Saindo...\nTe vejo em breve..." << endl; return -1;
