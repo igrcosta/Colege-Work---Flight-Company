@@ -6,6 +6,8 @@
 #include <ctime>
 #include <limits>
 #include <algorithm>
+#include <vector>
+#include <sstream>
 
 using namespace std;
 // ************  --------------  CLASSES   --------------  ************//
@@ -453,12 +455,141 @@ public:
 
 };
 
-int CadastroAssento(class ASSENTO &assento) {
-  cout<<"---------- Cadastro de Assento Selecionado ----------\n"<<endl;
+class Assento {
+public:
+    string numero;
+    string voo;
+    bool ocupado;
+
+    // Construtor
+    Assento() : numero(""), voo(""), ocupado(false) {}
+    Assento(const string& numero, const string& voo) : numero(numero), voo(voo), ocupado(false) {}
+
+    // Função membro para verificar se o assento está ocupado
+    bool isOcupado() const {
+        return ocupado;
+    }
+
+    void setOcupado(bool ocupado) {
+        this->ocupado = ocupado;
+    }
+
+    void salvar(const string& nomeArquivo) {
+        ofstream arquivo(nomeArquivo, ios::app);
+        if (!arquivo.is_open()) {
+            cerr << "Erro ao abrir o arquivo para salvar o assento." << endl;
+            return;
+        }
+        arquivo << numero << "," << voo << "," << (ocupado ? "ocupado" : "livre") << endl;
+        arquivo.close();
+    }
+
+    static bool validarNumeroAssento(const string& numeroAssento, int totalAssentos) {
+        try {
+            int num = stoi(numeroAssento);
+            return num > 0 && num <= totalAssentos;
+        } catch (const invalid_argument& e) {
+            cout << "Número de assento inválido." << endl;
+            return false;
+        }
+    }
+
+    static bool verificarAssentoDisponivel(const string& numeroAssento, const string& nomeArquivo) {
+        ifstream arquivo(nomeArquivo);
+        if (!arquivo.is_open()) {
+            cerr << "Erro ao abrir o arquivo de assentos." << endl;
+            return false;
+        }
+
+        string linha;
+        while (getline(arquivo, linha)) {
+            istringstream ss(linha);
+            string numero, voo, status;
+            getline(ss, numero, ',');
+            getline(ss, voo, ',');
+            getline(ss, status, ',');
+
+            if (numero == numeroAssento && status == "ocupado") {
+                arquivo.close();
+                return false;
+            }
+        }
+        arquivo.close();
+        return true;
+    }
+
+    static bool verificarExistenciaVoo(const string& codigoVoo, const string& nomeArquivoVoos) {
+        ifstream arquivo(nomeArquivoVoos);
+        if (!arquivo.is_open()) {
+            cerr << "Erro ao abrir o arquivo de voos." << endl;
+            return false;
+        }
+
+        string linha;
+        while (getline(arquivo, linha)) {
+            istringstream ss(linha);
+            string codigoVooArquivo;
+            getline(ss, codigoVooArquivo, ',');
+
+            if (codigoVooArquivo == codigoVoo) {
+                arquivo.close();
+                return true;
+            }
+        }
+        arquivo.close();
+        return false;
+    }
+
+    // Cadastro de assentos
+    static void cadastrarAssento(const string& nomeArquivoAssentos, const string& nomeArquivoVoos, int totalAssentos) {
+        string numero, voo;
+        cout << "Digite o número do assento: ";
+        cin >> numero;
+
+        if (Assento::validarNumeroAssento(numero, totalAssentos)) {
+            cout << "Digite o código do voo: ";
+            cin >> voo;
+
+            if (Assento::verificarExistenciaVoo(voo, nomeArquivoVoos)) {
+                if (Assento::verificarAssentoDisponivel(numero, nomeArquivoAssentos)) {
+                    Assento assento(numero, voo);
+                    assento.setOcupado(true);
+                    assento.salvar(nomeArquivoAssentos);
+                    cout << "Assento cadastrado com sucesso!" << endl;
+                } else {
+                    cout << "Assento já está ocupado." << endl;
+                }
+            } else {
+                system("cls");
+                //código para limpar o cmd
+                cout << "Voo não encontrado." << endl;
+
+            }
+        }
+    }
 };
+
+    // Carregar e exibir todos os assentos
+    static void carregarAssentos(const std::string& nomeArquivo) {
+        std::ifstream arquivo(nomeArquivo);
+        if (!arquivo.is_open()) {
+            std::cerr << "Erro ao abrir o arquivo de assentos.\n";
+            return;
+        }
+
+        std::string linha;
+        std::cout << "Assentos cadastrados:\n";
+        while (std::getline(arquivo, linha)) {
+            std::cout << linha << "\n";
+        }
+        arquivo.close();
+    };
+
+
 
 /* parte ana */
 
+/*
 struct ReservaInfo {
     int codigoVoo;
     int numeroAssento;
@@ -564,13 +695,13 @@ int PesquisarPessoa(class PASSAGEIRO &passageiro, class TRIPULACAO &tripulacao) 
     return 0;
 };
 
-
+*/
 int escolhaFuncao(int escolha){
 
   PASSAGEIRO passageiro;
   TRIPULACAO tripulacao;
   Voo voo;
-  //ASSENTO assento;
+  Assento assento;
   //RESERVA reserva;
     std::string nomeArquivo = "voos.txt";
 
@@ -579,7 +710,7 @@ int escolhaFuncao(int escolha){
   case 1: CadastroPassageiro(passageiro); break;
   case 2: CadastroTripulacao(tripulacao); break;
   case 3: voo.criarInformacoes(nomeArquivo); break;
-  //case 4: CadastroAssento(assento); break;
+  case 4: Assento::cadastrarAssento("assentos.txt", "voos.txt", 180);break;
   /*case 5:
     cout<<"Digite o código do voo: ";
     cin>>voo.codigoVoo;
@@ -597,7 +728,9 @@ int escolhaFuncao(int escolha){
     cin>>assento.numeroAssento;
     BaixarReserva(voo.codigoVoo, assento.numeroAssento);
     break; */
+    /*
   case 7: PesquisarPessoa(passageiro,tripulacao); break;
+  */
   case 0: cout << "Saindo...\nTe vejo em breve..." << endl; return -1;
   default: cout <<"Opção invalida, escolha uma opção de 1 a 7"<<endl; return escolha;
 
@@ -637,7 +770,6 @@ void exibirmenu(){
 
 int main(){
     setlocale(LC_ALL, "portuguese");
-
     exibirmenu();
 
     return 0;
