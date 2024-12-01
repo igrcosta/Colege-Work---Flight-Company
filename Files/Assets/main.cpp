@@ -19,7 +19,7 @@ protected:
     string nome;
 };
 
-class PASSAGEIRO : protected Padroes
+class PASSAGEIRO : protected Padroes /// MODIFICOU
 {
 
 private:
@@ -47,101 +47,69 @@ public:
     void setFidelidadePassageiro(bool fidelidadePassageiro) { fidelidade = fidelidadePassageiro; }
     bool getFidelidadePassageiro() const { return fidelidade; }
 
-
 };
 
-class CARGO
+
+class CARGO /// MODIFICOU
 {
 public:
     int codigoPiloto, codigoCopiloto, codigoComissario;
     string nomePiloto, nomeCopiloto, nomeComissario;
+    string telefonePiloto, telefoneCopiloto, telefoneComissario;
 
-    void setCodigoPiloto(int codigo)
-    {
-        if (codigo > 0)
-        {
-            codigoPiloto = codigo;
-        }
-        else
-        {
-            throw invalid_argument("O código tem que ser maior que 0");
-        }
-    }
-
-    void setNomePiloto(const string nome) { nomePiloto = nome; }
+    void setCodigoPiloto(int codigo) { codigoPiloto = codigo; }
+    void setNomePiloto(const string& nome) { nomePiloto = nome; }
     string getNomePiloto() const { return nomePiloto; }
 
-    void setCodigoCopiloto(int codigo)
-    {
-        if (codigo > 0)
-        {
-            codigoCopiloto = codigo;
-        }
-        else
-        {
-            throw invalid_argument("O código tem que ser maior que 0");
-        }
-    }
+    void setTelefonePiloto(const string& telefone) { telefonePiloto = telefone; }
+    string getTelefonePiloto() const { return telefonePiloto; }
 
-    void setNomeCopiloto(const string nome) { nomeCopiloto = nome; }
+    void setCodigoCopiloto(int codigo) { codigoCopiloto = codigo; }
+    void setNomeCopiloto(const string& nome) { nomeCopiloto = nome; }
     string getNomeCopiloto() const { return nomeCopiloto; }
 
-    void setCodigoComissario(int codigo)
-    {
-        if (codigo > 0)
-        {
-            codigoComissario = codigo;
-        }
-        else
-        {
-            throw invalid_argument("O código tem que ser maior que 0");
-        }
-    }
+    void setTelefoneCopiloto(const string& telefone) { telefoneCopiloto = telefone; }
+    string getTelefoneCopiloto() const { return telefoneCopiloto; }
 
-    void setNomeComissario(string nome) { nomeComissario = nome; }
+    void setCodigoComissario(int codigo) { codigoComissario = codigo; }
+    void setNomeComissario(const string& nome) { nomeComissario = nome; }
     string getNomeComissario() const { return nomeComissario; }
+
+    void setTelefoneComissario(const string& telefone) { telefoneComissario = telefone; }
+    string getTelefoneComissario() const { return telefoneComissario; }
 };
 
-class TRIPULACAO : protected Padroes
-{
+class TRIPULACAO : protected Padroes { /// MODIFICOU
 private:
-    int telefone;
+    int telefone, codigo;
     string nome;
-    class CARGO cargo;
+    CARGO cargo;
 
 public:
-    void setCodigo(int codigoTripulacao)
-    {
-        if (codigoTripulacao > 0)
-        {
+    void setCodigo(int codigoTripulacao) {
+        if (codigoTripulacao > 0) {
             codigo = codigoTripulacao;
-        }
-        else
-        {
+        } else {
             throw invalid_argument("Digite um codigo maior que 0");
         }
     }
 
     int getCodigo() const { return codigo; }
 
-    void setTelefone(int telefoneTripulacao)
-    {
-        if (telefoneTripulacao > 0)
-        {
+    void setTelefone(int telefoneTripulacao) {
+        if (telefoneTripulacao > 0) {
             telefone = telefoneTripulacao;
-        }
-        else
-        {
+        } else {
             throw invalid_argument("Digite um telefone maior que 0");
         }
     }
 
     int getTelefone() const { return telefone; }
 
-    void setNomeTripulacao(string nomeTripulacao) { nome = nomeTripulacao; }
+    void setNomeTripulacao(const string& nomeTripulacao) { nome = nomeTripulacao; }
     string getNomeTripulacao() const { return nome; }
 
-    CARGO getCargo() { return cargo; }
+    CARGO& getCargo() { return cargo; }
 };
 
 class DATA
@@ -224,12 +192,44 @@ public:
     }
 };
 
+class PILOTO{ /// N SEI SE MUDOU ALGO MAS DEIXA PQ TA FUNCIONADNO
+private:
+    string nome, telefone;
+    int codigo;
+
+public:
+    void setNomePiloto(string nomePiloto) { nome = nomePiloto; }
+    string getNomePiloto() const { return nome; }
+
+    void setTelefonePiloto(string telefonePiloto) { telefone = telefonePiloto; }
+    string getTelefonePiloto() const { return telefone; }
+
+    void setCodigoPiloto(int codigoPiloto) { codigo = codigoPiloto; }
+    int getcodigoPiloto() const { return codigo; }
+
+    void InserirDadosPiloto() {
+        cout << "Digite o nome do piloto: ";
+        cin.ignore();
+        getline(cin, nome);
+
+        cout << "Digite o telefone do piloto: ";
+        cin.ignore();
+        getline(cin, telefone);
+
+        cout << "Digite o codigo do piloto: ";
+        cin >> codigo;
+    }
+
+};
+class COPILOTO{ /// MODIFICOU ND MAS TA FUNCIONADNO ALGO
+};
+class COMISSARIO{ /// MODIFICOU ND MAS TA FUNCIONANDO ALGO
+};
 
 // ************  --------------  FUNCOES   --------------  ************//
 
-int CadastroPassageiro(class PASSAGEIRO &passageiro) {
+int CadastroPassageiro(class PASSAGEIRO &passageiro) { /// MODIFICOU
 
-    setlocale(LC_ALL, "portuguese");
     static int contadorCodigoPassageiro = 1000;
     int ficarOuSair;
 
@@ -304,7 +304,7 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
 
 
     passageiro.setCodigoPassageiro(contadorCodigoPassageiro++);
-    cout << "Código do Passageiro: " << passageiro.getCodigoPassageiro() << "\n";
+    cout << "Código do Passageiro: PG - " << passageiro.getCodigoPassageiro() << "\n";
 
     /// ---------- salvar em arquivo ----------
 
@@ -314,7 +314,7 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
             << "\nEstado: " << enderecoPassageiro.getEstadoPassageiro()
             << "\nCidade: " << enderecoPassageiro.getCidadePassageiro() << endl;
     arquivo << "Telefone do Passageiro: " << telefonePassageiro << endl;
-    arquivo << "Código: " << passageiro.getCodigoPassageiro() << endl;
+    arquivo << "Código: " << "PG - " << passageiro.getCodigoPassageiro() << endl;
     //arquivo << "Pontos de Fidelidade do Passageiro: " << pontosFidelidade << endl; IGOR, COMANDO PARA SALVAR NO ARQUIVO TXT
     arquivo << " " << endl;
 
@@ -349,10 +349,166 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
     return 0;
 };
 
-int CadastroTripulacao(class TRIPULACAO &tripulacao) {
-  cout<<"---------- Cadastro de Tripulação Selecionado ----------\n"<<endl;
+int CadastroTripulacao(TRIPULACAO& tripulacao) { /// MODIFICOU
+
+    int ficarOuSair, opcao;
+    string nomeComissario, telefoneComissario;
+    string nomeCopiloto, telefoneCopiloto;
+    string nomePiloto, telefonePiloto;
+    static int contadorCodigoTripulacao = 1000;
+
+    ifstream arquivoLeitura("arquivosTripulacaoDados\\contadorCodigoTripulacao.txt");
+    if (arquivoLeitura.is_open()) {
+        arquivoLeitura >> contadorCodigoTripulacao;
+        arquivoLeitura.close();
+    } else {contadorCodigoTripulacao = 1000;}
+
+    ofstream arquivo("arquivosTripulacaoDados\\dadosTripulacao.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDEREÇO OU NOME
+    if (!arquivo.is_open()) {
+        cerr << "Erro ao abrir o arquivo para salvar os passageiros!" << endl;
+        return -1;
+    }
+
+    cout<<"---------- Cadastro de Tripulacao Selecionado ----------\n"<<endl;
+
+    do{
+        cout <<"Voce deseja fazer o cadastro de qual cargo?\n"
+             <<"1 - Piloto\n"
+             <<"2 - Copiloto\n"
+             <<"3 - Comissario\n"
+             <<"Digite: \n";
+         cin >> opcao;
+
+        switch(opcao){
+            case 1:{
+
+                cout << "Digite o nome do Piloto"<<endl;
+                cin.ignore();
+                getline(cin, nomePiloto);
+                tripulacao.getCargo().setNomePiloto(nomePiloto);
+
+                cout << "Digite o número de telefone do piloto: ";
+                cin >> telefonePiloto;
+
+                while (telefonePiloto.length() > 14 || !isdigit(telefonePiloto[0])) {
+                cout << "Digite um numero valido: ";
+                cin >> telefonePiloto;
+                }
+
+                tripulacao.getCargo().setTelefonePiloto(telefonePiloto);
+                tripulacao.getCargo().setCodigoPiloto(contadorCodigoTripulacao++);
+                cout << "Código do Piloto: " << tripulacao.getCargo().codigoPiloto << "\n";
+
+                cout <<"\nPiloto Cadastrado\n";
+                arquivo << "Piloto: " << nomePiloto << endl;
+                arquivo << "Telefone: " << telefonePiloto << endl;
+                arquivo << "Código: " << "PI - " << tripulacao.getCargo().codigoPiloto << endl;
+                arquivo << " " << endl;
+
+                ofstream arquivoContador("arquivosTripulacaoDados\\contadorCodigoTripulacao.txt");
+                if (arquivoContador.is_open()) {
+                    arquivoContador << contadorCodigoTripulacao;
+                    arquivoContador.close();
+                }
+
+                break;
+            }
+            case 2:{
+                cout << "Digite o nome do Copiloto: ";
+                cin.ignore();
+                getline(cin, nomeCopiloto);
+                tripulacao.getCargo().setNomeCopiloto(nomeCopiloto);
+
+                cout << "Digite o número de telefone do copiloto: ";
+                cin >> telefoneCopiloto;
+
+                while (telefoneCopiloto.length() > 14 || !isdigit(telefoneCopiloto[0])) {
+                    cout << "Digite um numero valido: ";
+                    cin >> telefoneCopiloto;
+                }
+
+                tripulacao.getCargo().setTelefoneCopiloto(telefoneCopiloto);
+                tripulacao.getCargo().setCodigoCopiloto(contadorCodigoTripulacao++);
+                cout << "Código do Copiloto: " << tripulacao.getCargo().codigoCopiloto << "\n";
+
+                cout << "\nCopiloto Cadastrado\n";
+                arquivo << "Copiloto: " << nomeCopiloto << endl;
+                arquivo << "Telefone: " << telefoneCopiloto << endl;
+                arquivo << "Código: " << "CO - " << tripulacao.getCargo().codigoCopiloto << endl;
+                arquivo << " " << endl;
+                break;
+            }
+            case 3:{
+
+                cout << "Digite o nome do Comissário: ";
+                cin.ignore();
+                getline(cin, nomeComissario);
+                tripulacao.getCargo().setNomeComissario(nomeComissario);
+
+                cout << "Digite o número de telefone do comissário: ";
+                cin >> telefoneComissario;
+
+                while (telefoneComissario.length() > 14 || !isdigit(telefoneComissario[0])) {
+                    cout << "Digite um numero valido: ";
+                    cin >> telefoneComissario;
+                }
+
+                tripulacao.getCargo().setTelefoneComissario(telefoneComissario);
+                tripulacao.getCargo().setCodigoComissario(contadorCodigoTripulacao++);
+                cout << "Código do Comissario: " << tripulacao.getCargo().codigoComissario << "\n";
+
+                cout << "\nComissário Cadastrado\n";
+                arquivo << "Comissário: " << nomeComissario << endl;
+                arquivo << "Telefone: " <<telefoneComissario << endl;
+                arquivo << "Código: " << "CM - " << tripulacao.getCargo().codigoComissario << endl;
+                arquivo << " " << endl;
+
+                ofstream arquivoContador("arquivosTripulacaoDados\\contadorCodigoTripulacao.txt");
+                if (arquivoContador.is_open()) {
+                    arquivoContador << contadorCodigoTripulacao;
+                    arquivoContador.close();
+                }
+                break;
+            }
+            case 0:
+                cout << "Voltando para o menu...\n";
+                break;
+            default:
+                cout << "Opção inválida! Tente novamente.\n";
+        }
+
+
+
+
+
+        cout << "Deseja continuar o cadastro um novo passageiro?\n"
+         << "Continuar.................Digite 1\n"
+         << "Voltar Para o Menu........Digite 0\n"
+         << "Digite: ";
+    cin >> ficarOuSair;
+
+    if(ficarOuSair == 1){
+        continue;
+    }else if(ficarOuSair == 0){
+        break;
+    }else{
+        cout << "\nValor invalido\n";
+    };
+    }while(true);
+
+    arquivo.close();
+
+    ofstream arquivoContador("arquivosTripulacaoDados\\contadorCodigoTripulacao.txt");
+    if (arquivoContador.is_open()) {
+        arquivoContador << contadorCodigoTripulacao;
+        arquivoContador.close();
+    } else {
+        cerr << "Erro ao atualizar o contador de códigos!" << endl;
+        return -1;
+    }
+
     return 0;
-};
+}
 
 class Voo {
 private:
