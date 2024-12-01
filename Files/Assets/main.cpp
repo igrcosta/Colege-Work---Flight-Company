@@ -193,118 +193,6 @@ public:
     int getAno() const { return ano; }
 };
 
-class VOO : protected Padroes
-{
-public:
-    int codigoVoo, codigoAviao;
-    class DATA dataVoo;
-    string origem, destino;
-    class CARGO cargo;
-    bool status;
-    float tarifa;
-
-public:
-    void setCodigoVoo(int codigo)
-    {
-        if (codigo > 0)
-        {
-            codigoVoo = codigo;
-        }
-        else
-        {
-            throw invalid_argument("Digite um codigo maior que 0");
-        }
-    }
-
-    int getCodigoVoo() const { return codigoVoo; }
-
-    void setCodigoAviao(int codigo)
-    {
-        if (codigo > 0)
-        {
-            codigoAviao = codigo;
-        }
-        else
-        {
-            throw invalid_argument("Digite um codigo maior que 0");
-        }
-    }
-
-    int getCodigoAviao() const { return codigoAviao; }
-
-    void setOrigem(string origem) { this->origem = origem; }
-    string getOrigem() const { return origem; }
-
-    void setDestino(string destino) { this->destino = destino; }
-    string getDestino() const { return destino; }
-
-    void setStatus(bool status) { this->status = status; }
-    bool getStatus() const { return status; }
-
-    void setTarifa(float tarifa)
-    {
-        if (tarifa >= 0)
-        {
-            this->tarifa = tarifa;
-        }
-        else
-        {
-            throw invalid_argument("Digite um valor que seja R$ 0");
-        }
-    }
-
-    float getTarifa() const { return tarifa; }
-
-    void setDataVoo(const DATA &data) { dataVoo = data; }
-    DATA getDataVoo() const { return dataVoo; }
-
-    CARGO &getCargo() { return cargo; }
-};
-
-class ASSENTO
-{
-public:
-    int numeroAssento;
-    class VOO voo;
-    bool status;
-
-    void setVoo(const VOO &voo) { this->voo = voo; }
-    VOO getVoo() const { return voo; }
-
-    void setNumeroAssento(int numAssento)
-    {
-        if (numAssento > 0)
-        {
-            numeroAssento = numAssento;
-        }
-        else
-        {
-            throw invalid_argument("Digite um numero maior que 0");
-        }
-    }
-
-    int getNumeroAssento() const { return numeroAssento; }
-
-    void setStatus(bool status) { this->status = status; }
-    bool getStatus() const { return status; }
-};
-
-class RESERVA
-{
-public:
-    class VOO voo;
-    class ASSENTO assento;
-    class PASSAGEIRO passageiro;
-
-    void setVoo(const VOO &voo) { this->voo = voo; }
-    VOO getVoo() const { return voo; }
-
-    void setAssento(const ASSENTO &assento) { this->assento = assento; }
-    ASSENTO getAssento() const { return assento; }
-
-    void setPassageiro(const PASSAGEIRO &passageiro) { this->passageiro = passageiro; }
-    PASSAGEIRO getPassageiro() const { return passageiro; }
-};
 
 class ENDERECOPASSAGEIRO { // teste - joao
 private:
@@ -347,9 +235,7 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
     if (arquivoLeitura.is_open()) {
         arquivoLeitura >> contadorCodigoPassageiro;
         arquivoLeitura.close();
-    } else {
-        contadorCodigoPassageiro = 1000;
-    }
+    } else {contadorCodigoPassageiro = 1000;}
 
     ofstream arquivo("arquivosPassageirosDados\\dadosPassageiro.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDEREÇO OU NOME
     if (!arquivo.is_open()) {
@@ -358,42 +244,39 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
     }
 
     cout<<"---------- Cadastro de Passageiros Selecionado ----------\n"<<endl;
-
     do{
     ///---------- nome do passageiro ----------
-        string nomePassageiro;
-
+    string nomePassageiro;
             cout<< "Digite o nome do passageiro: ";
             cin.ignore();
             getline(cin, nomePassageiro);
             passageiro.setNomePassageiro(nomePassageiro);
 
-
     ///---------- endereco do passageiro ----------
 
-        ENDERECOPASSAGEIRO enderecoPassageiro;
-        enderecoPassageiro.InserirEnderecoPassageiro();
+    ENDERECOPASSAGEIRO enderecoPassageiro;
+    enderecoPassageiro.InserirEnderecoPassageiro();
 
 
     ///---------- telefone do Passageiro ----------
 
-        string telefonePassageiro;
+    string telefonePassageiro;
+    cout << "Digite o número de telefone do passageiro: ";
+    cin >> telefonePassageiro;
 
-         cout << "Digite o número de telefone do passageiro: ";
-         cin >> telefonePassageiro;
-
-         while (telefonePassageiro.length() > 14 || !isdigit(telefonePassageiro[0])) {
-        cout << "Digite um numero valido: ";
-        cin >> telefonePassageiro;
+    while (telefonePassageiro.length() > 14 || !isdigit(telefonePassageiro[0])) {
+    cout << "Digite um numero valido: ";
+    cin >> telefonePassageiro;
     }
-        passageiro.setTelefonePassageiro(telefonePassageiro);
+
+    passageiro.setTelefonePassageiro(telefonePassageiro);
 
     ///---------- Fidelidade ----------
 
         /*---------- so remover aqui igor ----------
 
-            bool fidelidade;
-            int resposta;
+        bool fidelidade;
+        int resposta;
 
         cout << "O usuário tem pontos de fidelidade? (sim/nao): ";
         cin >> resposta;
@@ -418,8 +301,8 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
     ///---------- codigo do passageiro ----------
 
 
-        passageiro.setCodigoPassageiro(contadorCodigoPassageiro++);
-        cout << "Código do Passageiro: " << passageiro.getCodigoPassageiro() << "\n";
+    passageiro.setCodigoPassageiro(contadorCodigoPassageiro++);
+    cout << "Código do Passageiro: " << passageiro.getCodigoPassageiro() << "\n";
 
     /// ---------- salvar em arquivo ----------
 
@@ -430,9 +313,8 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
             << "\nCidade: " << enderecoPassageiro.getCidadePassageiro() << endl;
     arquivo << "Telefone do Passageiro: " << telefonePassageiro << endl;
     arquivo << "Código: " << passageiro.getCodigoPassageiro() << endl;
-    // arquivo << "Pontos de Fidelidade do Passageiro: " << pontosFidelidade << endl; IGOR, COMANDO PARA SALVAR NO ARQUIVO TXT
+    //arquivo << "Pontos de Fidelidade do Passageiro: " << pontosFidelidade << endl; IGOR, COMANDO PARA SALVAR NO ARQUIVO TXT
     arquivo << " " << endl;
-
 
     cout << "\nPassageiro cadastrado com sucesso!\n";
 
@@ -448,7 +330,7 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) {
         break;
     }else{
         cout << "\nValor invalido\n";
-        };
+    };
     }while(true);
 
     arquivo.close();
@@ -470,9 +352,99 @@ int CadastroTripulacao(class TRIPULACAO &tripulacao) {
     return 0;
 };
 
-int CadastroVoo(class VOO &voo) {
-  cout<<"---------- Cadastro de Voo Selecionado ----------\n"<<endl;
-    return 0;
+class Voo {
+private:
+    std::string codigoVoo, data, hora, origem, destino, codigoAviao, codigoPiloto, codigoCopiloto, codigoComissario;
+    bool status;  // true = ativo, false = inativo
+    double tarifa;
+
+public:
+    void criarInformacoes(const std::string& nomeArquivo) {
+        std::cout << "Digite o código do voo: ";
+        std::cin >> codigoVoo;
+
+        std::cout << "Digite a data (DD-MM-AAAA): ";
+        std::cin >> data;
+
+        std::cout << "Digite a hora (HH:MM): ";
+        std::cin >> hora;
+
+        std::cout << "Digite a origem: ";
+        std::cin >> origem;
+
+        std::cout << "Digite o destino: ";
+        std::cin >> destino;
+
+        std::cout << "Digite o código do avião: ";
+        std::cin >> codigoAviao;
+
+        std::cout << "Digite o código do piloto (digite 0 se não houver piloto): ";
+        std::cin >> codigoPiloto;
+
+        if (codigoPiloto == "0") {
+            codigoPiloto.clear();  // Se o código do piloto for 0, considera que não há piloto
+        }
+
+        std::cout << "Digite o código do copiloto (digite 0 se não houver copiloto): ";
+        std::cin >> codigoCopiloto;
+
+        if (codigoCopiloto == "0") {
+            codigoCopiloto.clear();  // Se o código do copiloto for 0, considera que não há copiloto
+        }
+
+        std::cout << "Digite o código do comissário: ";
+        std::cin >> codigoComissario;
+
+        status = (!codigoPiloto.empty() && !codigoCopiloto.empty());
+
+        std::cout << "Status do voo definido como: " << (status ? "Ativo" : "Inativo") << std::endl;
+
+        std::cout << "Digite a tarifa: ";
+        std::cin >> tarifa;
+
+        cadastrarVoo(nomeArquivo);
+    }
+
+    // Método para cadastrar voo em um arquivo
+    void cadastrarVoo(const std::string& nomeArquivo) {
+        std::ifstream arquivoVerificar(nomeArquivo);
+        bool arquivoExiste = arquivoVerificar.is_open();
+        arquivoVerificar.close();
+
+        std::ofstream arquivo(nomeArquivo, std::ios::app); /* flags, escrever ao final do arquivo sem sobrescrever */
+        if (arquivo.is_open()) {
+            if (!arquivoExiste) {
+                arquivo << "Código do Voo,Data,Hora,Origem,Destino,Código do Avião,Código do Piloto,"
+                        << "Código do Copiloto,Código do Comissário,Status, Tarifa\n";
+            }
+            arquivo << codigoVoo << "," << data << "," << hora << "," << origem << "," << destino << ","
+                    << codigoAviao << "," << (codigoPiloto.empty() ? "Nenhum" : codigoPiloto) << ","
+                    << (codigoCopiloto.empty() ? "Nenhum" : codigoCopiloto) << "," << codigoComissario << ","
+                    << (status ? "Ativo" : "Inativo") << "," << tarifa << "\n";
+            std::cout << "Voo cadastrado com sucesso no arquivo.\n";
+
+            /* se o copiloto ou piloto estiverem vazios, escreve nenhum */
+            /* status ? true : false */
+        } else {
+            std::cerr << "Erro ao abrir o arquivo para cadastro.\n";
+        }
+    }
+
+    // Método criado para verificar se estava funcionando
+    void abrirArquivo(const std::string& nomeArquivo) {
+        std::ifstream arquivo(nomeArquivo);
+        if (arquivo.is_open()) {
+            std::string linha;
+            std::cout << "Voos cadastrados no arquivo:\n";
+            while (std::getline(arquivo, linha)) {
+                std::cout << linha << std::endl;
+            }
+            arquivo.close();
+        } else {
+            std::cerr << "Erro ao abrir o arquivo para leitura.\n";
+        }
+    }
+
 };
 
 int CadastroAssento(class ASSENTO &assento) {
@@ -480,13 +452,15 @@ int CadastroAssento(class ASSENTO &assento) {
     return 0;
 };
 
+/*
+
 struct ReservaInfo {
     int codigoVoo;
     int numeroAssento;
     int codigoPassageiro;
 };
 
-void CadastrarReserva(const VOO &voo, ASSENTO &assento, const PASSAGEIRO &passageiro){
+void CadastrarReserva(const Voo &voo, ASSENTO &assento, const PASSAGEIRO &passageiro){
     if(!voo.getStatus()){
         cout<<"Reserva falhou. O voo não está ativo.\n";
         return;
@@ -573,6 +547,8 @@ void VerificarReserva(int codigoVoo, int numeroAssento){
     }
 }
 
+*/
+
 int VerificarReserva(class RESERVA &reserva) {
   cout<<"---------- Verificação de Reservas Selecionado ----------\n"<<endl;
     return 0;
@@ -592,17 +568,18 @@ int escolhaFuncao(int escolha){
 
   PASSAGEIRO passageiro;
   TRIPULACAO tripulacao;
-  VOO voo;
-  ASSENTO assento;
-  RESERVA reserva;
+  Voo voo;
+  //ASSENTO assento;
+  //RESERVA reserva;
+    std::string nomeArquivo = "voos.txt";
 
   switch(escolha){
 
   case 1: CadastroPassageiro(passageiro); break;
   case 2: CadastroTripulacao(tripulacao); break;
-  case 3: CadastroVoo(voo); break;
-  case 4: CadastroAssento(assento); break;
-  case 5:
+  case 3: voo.criarInformacoes(nomeArquivo); break;
+  //case 4: CadastroAssento(assento); break;
+  /*case 5:
     cout<<"Digite o código do voo: ";
     cin>>voo.codigoVoo;
     cout<<"Digite o número do assento: ";
@@ -618,7 +595,7 @@ int escolhaFuncao(int escolha){
     cout<<"Digite o número do assento a ser liberado: ";
     cin>>assento.numeroAssento;
     BaixarReserva(voo.codigoVoo, assento.numeroAssento);
-    break;
+    break; */
   case 7: PesquisarPessoa(passageiro,tripulacao); break;
   case 0: cout << "Saindo...\nTe vejo em breve..." << endl; return -1;
   default: cout <<"Opção invalida, escolha uma opção de 1 a 7"<<endl; return escolha;
