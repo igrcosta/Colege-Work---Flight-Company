@@ -1,9 +1,13 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <cstdlib>
+#include <fstream>
+#include <ctime>
+#include <limits>
+#include <algorithm>
 
 using namespace std;
-
 // ************  --------------  CLASSES   --------------  ************//
 
 class Padroes
@@ -16,16 +20,16 @@ protected:
 class PASSAGEIRO : protected Padroes
 {
 private:
-    int telefone, pontosFidelidade;
-    string endereco;
+    int pontosFidelidade;
+    string endereco, telefone;
     bool fidelidade;
 
 public:
     void setCodigoPassageiro(int codigoPassageiro) { codigo = codigoPassageiro; }
     int getCodigoPassageiro() const { return codigo; }
 
-    void setTelefonePassageiro(int telefonePassageiro) { telefone = telefonePassageiro; }
-    int getTelefonePassageiro() const { return telefone; }
+    void setTelefonePassageiro(string telefonePassageiro) { telefone = telefonePassageiro; }
+    string getTelefonePassageiro() const { return telefone; }
 
     void setPontosFidelidadePassageiro(int pontosFidelidadePassageiro) { pontosFidelidade = pontosFidelidadePassageiro; }
     int getPontosFidelidadePassageiro() const { return pontosFidelidade; }
@@ -298,12 +302,149 @@ public:
     PASSAGEIRO getPassageiro() const { return passageiro; }
 };
 
+class ENDERECOPASSAGEIRO { // teste - joao
+private:
+    string pais, estado, cidade;
+
+public:
+    // Setters
+    void setPaisPassageiro(string paisPassageiro) { pais = paisPassageiro; }
+    string getPaisPassageiro() const { return pais; }
+
+    void setEstadoPassageiro(string estadoPassageiro) { estado = estadoPassageiro; }
+    string getEstadoPassageiro() const { return estado; }
+
+    void setCidadePassageiro(string cidadePassageiro) { cidade = cidadePassageiro; }
+    string getCidadePassageiro() const { return cidade; }
+
+    void InserirEnderecoPassageiro() {
+        cout << "Digite o nome do país: ";
+        getline(cin, pais);
+
+        cout << "Digite o nome do estado: ";
+        getline(cin, estado);
+
+        cout << "Digite o nome da cidade: ";
+        getline(cin, cidade);
+
+    }
+};
+
 
 // ************  --------------  FUNCOES   --------------  ************//
 
+
 int CadastroPassageiro(class PASSAGEIRO &passageiro) {
+    setlocale(LC_ALL, "portuguese");
+    int ficarOuSair;
+
+    ofstream arquivo("dadosPassageiros.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDEREÇO OU NOME
+    if (!arquivo.is_open()) {
+        cerr << "Erro ao abrir o arquivo para salvar os passageiros!" << endl;
+        return -1;
+    }
+
     cout<<"---------- Cadastro de Passageiros Selecionado ----------\n"<<endl;
-  
+
+
+    do{
+
+        // nome do passageiro
+        string nomePassageiro;
+
+            cout<< "\nDigite o nome do passageiro: ";
+            cin.ignore();
+            getline(cin, nomePassageiro);
+            passageiro.setNomePassageiro(nomePassageiro);
+
+
+        // endereco do passageiro
+
+        ENDERECOPASSAGEIRO enderecoPassageiro;
+        enderecoPassageiro.InserirEnderecoPassageiro();
+
+
+        // telefone do Passageiro
+
+        string telefonePassageiro;
+
+         cout << "Digite o número de telefone do passageiro: ";
+         cin >> telefonePassageiro;
+
+         while (telefonePassageiro.length() > 14 || !isdigit(telefonePassageiro[0])) {
+        cout << "Digite um numero valido: ";
+        cin >> telefonePassageiro;
+    }
+        passageiro.setTelefonePassageiro(telefonePassageiro);
+
+            // Fidelidade
+
+        /*
+
+            bool fidelidade;
+            int resposta;
+
+        cout << "O usuário tem pontos de fidelidade? (sim/nao): ";
+        cin >> resposta;
+
+        if (resposta == "sim" || resposta == "SIM") { // IGOR AQUI É SO PARA SABER SE TEM FIDELIDADE, AQUI VC N PRECISA MEXER
+        fidelidade = true;
+    } else if (resposta == "nao" || resposta == "NAO") {
+        fidelidade = false;
+    } else {
+        cout << "Digite 'sim' ou 'nao'.";
+        return -1;
+    }
+
+        if (fidelidade) {
+            // IGOR VC VAI COMEÇAR POR AQUI, CHAMA A SUA FUNCAO, METODO, CLASSE, SEI LA O QUE VC VAI FAZER, QLQR COISA OU DUVIDA SO CHAMAR
+    } else {
+        cout << "Sem pontos de fidelidade, faça o seu primeiro voo para recebe-lo !!!" << endl;
+    }
+
+    */
+
+                // codigo do passageiro
+
+        int codigoPassageiro;
+
+        unsigned seed = time(0);
+        srand(seed);
+
+        codigoPassageiro = 1000 + rand() % 4001;
+        cout<<"Codigo do Passageiro: "<<codigoPassageiro<<"\n";
+        passageiro.setCodigoPassageiro(codigoPassageiro);
+
+
+    arquivo << "Nome do Passageiro: " << nomePassageiro << endl;
+    arquivo << "Endereco: "<< endl;
+    arquivo << "Pais: " << enderecoPassageiro.getPaisPassageiro()
+            << "\nEstado: " << enderecoPassageiro.getEstadoPassageiro()
+            << "\nCidade: " << enderecoPassageiro.getCidadePassageiro() << endl;
+    arquivo << "Telefone do Passageiro: " << telefonePassageiro << endl;
+    arquivo << "Codigo do Passageiro: " << codigoPassageiro << endl;
+    // arquivo << "Pontos de Fidelidade do Passageiro: " << pontosFidelidade << endl; IGOR, COMANDO PARA SALVAR NO ARQUIVO TXT
+
+
+    cout << "\nPassageiro cadastrado com sucesso!\n";
+
+    cout << "Deseja continuar o cadastro um novo passageiro?\n"
+         << "Continuar.................Digite 1\n"
+         << "Voltar Para o Menu........Digite 0\n"
+         << "Digite: ";
+    cin >> ficarOuSair;
+
+    if(ficarOuSair == 1){
+        continue;
+    }else if(ficarOuSair == 0){
+        break;
+    }else{
+        cout << "\nValor invalido\n";
+        };
+    }while(true);
+
+    arquivo.close();
+
     return 0;
 };
 
@@ -337,7 +478,7 @@ int PesquisarPessoa(class PASSAGEIRO &passageiro, class TRIPULACAO &tripulacao) 
     return 0;
 };
 
-int escolhaFuncao(int escolhaFuncao){
+int escolhaFuncao(int escolha){
 
   PASSAGEIRO passageiro;
   TRIPULACAO tripulacao;
@@ -345,7 +486,7 @@ int escolhaFuncao(int escolhaFuncao){
   ASSENTO assento;
   RESERVA reserva;
 
-  switch(escolhaFuncao){
+  switch(escolha){
 
   case 1: CadastroPassageiro(passageiro); break;
   case 2: CadastroTripulacao(tripulacao); break;
@@ -354,19 +495,18 @@ int escolhaFuncao(int escolhaFuncao){
   case 5: VerificarReserva(reserva); break;
   case 6: BaixarReserva(reserva); break;
   case 7: PesquisarPessoa(passageiro,tripulacao); break;
-  case 0: cout << "Fechando o programa" << endl; return 0;
-  default: cout <<"Opção invalida, escolha uma opção de 1 a 7"<<endl; return escolhaFuncao;
+  case 0: cout << "Saindo...\nTe vejo em breve..." << endl; return -1;
+  default: cout <<"Opção invalida, escolha uma opção de 1 a 7"<<endl; return escolha;
 
   }
 
   return 0;
 };
 
-// ************  --------------  MAIN   --------------  ************//
+// ************  --------------  VOID   --------------  ************//
 
-int main(){
-    setlocale(LC_ALL, "portuguese");
-    int escolha = 0;
+void exibirmenu(){
+        int opcao = 0;
 
   do {
       cout << "\nBem-vindo(a) ao Voe Tranquilo!\n"
@@ -379,10 +519,23 @@ int main(){
            << "5 - Verificar Reserva\n"
            << "6 - Baixar Reserva\n"
            << "7 - Pesquisa de Pessoa\n"
-           << "0 - Encerrar o Programa\n" << endl;
-      cout << "Escolha o que deseja: ";
-      cin >> escolha;
-  } while (escolhaFuncao(escolha) < 0);
+           << "0 - Encerrar o Programa\n"
+           << "Escolha o que deseja: ";
+      cin >> opcao;
 
+  if (escolhaFuncao(opcao) == -1) {
+            break;
+        }
+    } while(true);
 
-    }
+}
+
+// ************  --------------  MAIN   --------------  ************//
+
+int main(){
+    setlocale(LC_ALL, "portuguese");
+
+    exibirmenu();
+
+    return 0;
+}
