@@ -181,7 +181,7 @@ public:
     string getCidadePassageiro() const { return cidade; }
 
     void InserirEnderecoPassageiro() {
-        cout << "Digite o nome do pa√≠s: ";
+        cout << "Digite o nome do paÌs: ";
         getline(cin, pais);
 
         cout << "Digite o nome do estado: ";
@@ -257,7 +257,7 @@ void atualizarPontosFidelidade(int codigoPassageiro, const string& nomePassageir
         arquivoEntrada.close();
     }
 
-    // Adicionar novo passageiro se n√£o encontrado
+    // Adicionar novo passageiro se n„o encontrado
     if (!encontrado) {
         fidelidades.push_back({codigoPassageiro, {nomePassageiro, 10}});
     }
@@ -296,266 +296,137 @@ void consultarPontosFidelidade(int codigoPassageiro) {
             }
         }
         arquivo.close();
-        cout << "Passageiro n√£o encontrado no sistema de fidelidade." << endl;
+        cout << "Passageiro n„o encontrado no sistema de fidelidade." << endl;
     } else {
         cerr << "Erro ao abrir o arquivo de fidelidade." << endl;
     }
 }
 
-int CadastroPassageiro(class PASSAGEIRO &passageiro) { /// MODIFICOU
+int CadastroPassageiro(PASSAGEIRO& passageiro) {
+    static int contadorCodigoPassageiro = 1000; // Contador inicial
 
-    static int contadorCodigoPassageiro = 1000;
-    int ficarOuSair;
-
+    // Tentar ler o contador existente do arquivo
     ifstream arquivoLeitura("contadorCodigoPassageiro.txt");
     if (arquivoLeitura.is_open()) {
         arquivoLeitura >> contadorCodigoPassageiro;
         arquivoLeitura.close();
-    } else {contadorCodigoPassageiro = 1000;}
+    }
 
-    ofstream arquivo("dadosPassageiro.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDERE√áO OU NOME
+    ofstream arquivo("dadosPassageiro.txt", ios::app);
     if (!arquivo.is_open()) {
         cerr << "Erro ao abrir o arquivo para salvar os passageiros!" << endl;
         return -1;
     }
 
-    cout<<"---------- Cadastro de Passageiros Selecionado ----------\n"<<endl;
-    do{
-    ///---------- nome do passageiro ----------
-    string nomePassageiro;
-            cout<< "Digite o nome do passageiro: ";
-            cin.ignore();
-            getline(cin, nomePassageiro);
-            passageiro.setNomePassageiro(nomePassageiro);
+    cout << "---------- Cadastro de Passageiros ----------\n";
+    int continuar;
+    do {
+        string nomePassageiro, telefonePassageiro;
 
-    ///---------- endereco do passageiro ----------
+        // Entrada de dados
+        cout << "Digite o nome do passageiro: ";
+        cin.ignore();
+        getline(cin, nomePassageiro);
 
-    ENDERECOPASSAGEIRO enderecoPassageiro;
-    enderecoPassageiro.InserirEnderecoPassageiro();
+        cout << "Digite o n˙mero de telefone do passageiro: ";
+        cin >> telefonePassageiro;
 
+        // Gerar cÛdigo do passageiro
+        int codigoPassageiro = contadorCodigoPassageiro++;
 
-    ///---------- telefone do Passageiro ----------
+        // Salvar dados no arquivo
+        arquivo << codigoPassageiro << "," << nomePassageiro << ",Passageiro," << telefonePassageiro << "\n";
 
-    string telefonePassageiro;
-    cout << "Digite o n√∫mero de telefone do passageiro: ";
-    cin >> telefonePassageiro;
+        cout << "\nPassageiro cadastrado com sucesso! CÛdigo: " << codigoPassageiro << "\n";
 
-    while (telefonePassageiro.length() > 14 || !isdigit(telefonePassageiro[0])) {
-    cout << "Digite um numero valido: ";
-    cin >> telefonePassageiro;
-    }
+        // Perguntar se deseja continuar
+        cout << "Deseja cadastrar outro passageiro? (1 - Sim, 0 - N„o): ";
+        cin >> continuar;
 
-    passageiro.setTelefonePassageiro(telefonePassageiro);
-
-    ///---------- codigo do passageiro ----------
-
-
-    passageiro.setCodigoPassageiro(contadorCodigoPassageiro++);
-    cout << "C√≥digo do Passageiro: PG - " << passageiro.getCodigoPassageiro() << "\n";
-
-    /// ---------- salvar em arquivo ----------
-
-    arquivo << "Nome do Passageiro: " << nomePassageiro << endl;
-    arquivo << "Endereco: "<< endl;
-    arquivo << "Pais: " << enderecoPassageiro.getPaisPassageiro()
-            << "\nEstado: " << enderecoPassageiro.getEstadoPassageiro()
-            << "\nCidade: " << enderecoPassageiro.getCidadePassageiro() << endl;
-    arquivo << "Telefone do Passageiro: " << telefonePassageiro << endl;
-    arquivo << "C√≥digo: " << "PG - " << passageiro.getCodigoPassageiro() << endl;
-    //arquivo << "Pontos de Fidelidade do Passageiro: " << pontosFidelidade << endl; IGOR, COMANDO PARA SALVAR NO ARQUIVO TXT
-    arquivo << " " << endl;
-
-    cout << "\nPassageiro cadastrado com sucesso!\n";
-
-    cout << "Deseja continuar o cadastro um novo passageiro?\n"
-         << "Continuar.................Digite 1\n"
-         << "Voltar Para o Menu........Digite 0\n"
-         << "Digite: ";
-    cin >> ficarOuSair;
-
-    if(ficarOuSair == 1){
-        continue;
-    }else if(ficarOuSair == 0){
-        break;
-    }else{
-        cout << "\nValor invalido\n";
-    };
-    }while(true);
+    } while (continuar == 1);
 
     arquivo.close();
 
+    // Atualizar o contador no arquivo
     ofstream arquivoContador("contadorCodigoPassageiro.txt");
     if (arquivoContador.is_open()) {
         arquivoContador << contadorCodigoPassageiro;
         arquivoContador.close();
-    } else {
-        cerr << "Erro ao atualizar o contador de c√≥digos!" << endl;
-        return -1;
-    }
-
-    return 0;
-};
-
-int CadastroTripulacao(TRIPULACAO& tripulacao) { /// MODIFICOU
-
-    int ficarOuSair, opcao;
-    string nomeComissario, telefoneComissario;
-    string nomeCopiloto, telefoneCopiloto;
-    string nomePiloto, telefonePiloto;
-    static int contadorCodigoTripulacao = 1000;
-
-    ifstream arquivoLeitura("contadorCodigoTripulacao.txt");
-    if (arquivoLeitura.is_open()) {
-        arquivoLeitura >> contadorCodigoTripulacao;
-        arquivoLeitura.close();
-    } else {contadorCodigoTripulacao = 1000;}
-
-    ofstream arquivo("dadosTripulacao.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDERE√áO OU NOME
-    if (!arquivo.is_open()) {
-        cerr << "Erro ao abrir o arquivo para salvar os passageiros!" << endl;
-        return -1;
-    }
-
-    cout<<"---------- Cadastro de Tripulacao Selecionado ----------\n"<<endl;
-
-    do{
-        cout <<"Voce deseja fazer o cadastro de qual cargo?\n"
-             <<"1 - Piloto\n"
-             <<"2 - Copiloto\n"
-             <<"3 - Comissario\n"
-             <<"Digite: \n";
-         cin >> opcao;
-
-        switch(opcao){
-            case 1:{
-
-                cout << "Digite o nome do Piloto"<<endl;
-                cin.ignore();
-                getline(cin, nomePiloto);
-                tripulacao.getCargo().setNomePiloto(nomePiloto);
-
-                cout << "Digite o n√∫mero de telefone do piloto: ";
-                cin >> telefonePiloto;
-
-                while (telefonePiloto.length() > 14 || !isdigit(telefonePiloto[0])) {
-                cout << "Digite um numero valido: ";
-                cin >> telefonePiloto;
-                }
-
-                tripulacao.getCargo().setTelefonePiloto(telefonePiloto);
-                tripulacao.getCargo().setCodigoPiloto(contadorCodigoTripulacao++);
-                cout << "C√≥digo do Piloto: " << tripulacao.getCargo().codigoPiloto << "\n";
-
-                cout <<"\nPiloto Cadastrado\n";
-                arquivo << "Piloto: " << nomePiloto << endl;
-                arquivo << "Telefone: " << telefonePiloto << endl;
-                arquivo << "C√≥digo: " << "PI - " << tripulacao.getCargo().codigoPiloto << endl;
-                arquivo << " " << endl;
-
-                ofstream arquivoContador("contadorCodigoTripulacao.txt");
-                if (arquivoContador.is_open()) {
-                    arquivoContador << contadorCodigoTripulacao;
-                    arquivoContador.close();
-                }
-
-                break;
-            }
-            case 2:{
-                cout << "Digite o nome do Copiloto: ";
-                cin.ignore();
-                getline(cin, nomeCopiloto);
-                tripulacao.getCargo().setNomeCopiloto(nomeCopiloto);
-
-                cout << "Digite o n√∫mero de telefone do copiloto: ";
-                cin >> telefoneCopiloto;
-
-                while (telefoneCopiloto.length() > 14 || !isdigit(telefoneCopiloto[0])) {
-                    cout << "Digite um numero valido: ";
-                    cin >> telefoneCopiloto;
-                }
-
-                tripulacao.getCargo().setTelefoneCopiloto(telefoneCopiloto);
-                tripulacao.getCargo().setCodigoCopiloto(contadorCodigoTripulacao++);
-                cout << "C√≥digo do Copiloto: " << tripulacao.getCargo().codigoCopiloto << "\n";
-
-                cout << "\nCopiloto Cadastrado\n";
-                arquivo << "Copiloto: " << nomeCopiloto << endl;
-                arquivo << "Telefone: " << telefoneCopiloto << endl;
-                arquivo << "C√≥digo: " << "CO - " << tripulacao.getCargo().codigoCopiloto << endl;
-                arquivo << " " << endl;
-                break;
-            }
-            case 3:{
-
-                cout << "Digite o nome do Comiss√°rio: ";
-                cin.ignore();
-                getline(cin, nomeComissario);
-                tripulacao.getCargo().setNomeComissario(nomeComissario);
-
-                cout << "Digite o n√∫mero de telefone do comiss√°rio: ";
-                cin >> telefoneComissario;
-
-                while (telefoneComissario.length() > 14 || !isdigit(telefoneComissario[0])) {
-                    cout << "Digite um numero valido: ";
-                    cin >> telefoneComissario;
-                }
-
-                tripulacao.getCargo().setTelefoneComissario(telefoneComissario);
-                tripulacao.getCargo().setCodigoComissario(contadorCodigoTripulacao++);
-                cout << "C√≥digo do Comissario: " << tripulacao.getCargo().codigoComissario << "\n";
-
-                cout << "\nComiss√°rio Cadastrado\n";
-                arquivo << "Comiss√°rio: " << nomeComissario << endl;
-                arquivo << "Telefone: " <<telefoneComissario << endl;
-                arquivo << "C√≥digo: " << "CM - " << tripulacao.getCargo().codigoComissario << endl;
-                arquivo << " " << endl;
-
-                ofstream arquivoContador("arquivosTripulacaoDados\\contadorCodigoTripulacao.txt");
-                if (arquivoContador.is_open()) {
-                    arquivoContador << contadorCodigoTripulacao;
-                    arquivoContador.close();
-                }
-                break;
-            }
-            case 0:
-                cout << "Voltando para o menu...\n";
-                break;
-            default:
-                cout << "Op√ß√£o inv√°lida! Tente novamente.\n";
-        }
-
-
-
-
-
-        cout << "Deseja continuar o cadastro um novo passageiro?\n"
-         << "Continuar.................Digite 1\n"
-         << "Voltar Para o Menu........Digite 0\n"
-         << "Digite: ";
-    cin >> ficarOuSair;
-
-    if(ficarOuSair == 1){
-        continue;
-    }else if(ficarOuSair == 0){
-        break;
-    }else{
-        cout << "\nValor invalido\n";
-    };
-    }while(true);
-
-    arquivo.close();
-
-    ofstream arquivoContador("contadorCodigoTripulacao.txt");
-    if (arquivoContador.is_open()) {
-        arquivoContador << contadorCodigoTripulacao;
-        arquivoContador.close();
-    } else {
-        cerr << "Erro ao atualizar o contador de c√≥digos!" << endl;
-        return -1;
     }
 
     return 0;
 }
+
+
+int CadastroTripulacao(TRIPULACAO& tripulacao) {
+    static int contadorCodigoTripulacao = 1000; // Contador inicial
+
+    // Tentar ler o contador existente do arquivo
+    ifstream arquivoLeitura("contadorCodigoTripulacao.txt");
+    if (arquivoLeitura.is_open()) {
+        arquivoLeitura >> contadorCodigoTripulacao;
+        arquivoLeitura.close();
+    }
+
+    ofstream arquivo("dadosTripulacao.txt", ios::app);
+    if (!arquivo.is_open()) {
+        cerr << "Erro ao abrir o arquivo para salvar os tripulantes!" << endl;
+        return -1;
+    }
+
+    cout << "---------- Cadastro de Tripulantes ----------\n";
+    int continuar;
+    do {
+        string nomeTripulante, telefoneTripulante, cargo;
+        int tipo;
+
+        // Entrada de dados
+        cout << "Digite o nome do tripulante: ";
+        cin.ignore();
+        getline(cin, nomeTripulante);
+
+        cout << "Digite o n˙mero de telefone do tripulante: ";
+        cin >> telefoneTripulante;
+
+        cout << "Escolha o cargo:\n1 - Piloto\n2 - Copiloto\n3 - Comiss·rio\nEscolha: ";
+        cin >> tipo;
+
+        switch (tipo) {
+            case 1: cargo = "Piloto"; break;
+            case 2: cargo = "Copiloto"; break;
+            case 3: cargo = "Comiss·rio"; break;
+            default:
+                cout << "OpÁ„o inv·lida! Cadastro cancelado.\n";
+                return -1;
+        }
+
+        // Gerar cÛdigo do tripulante
+        int codigoTripulante = contadorCodigoTripulacao++;
+
+        // Salvar dados no arquivo
+        arquivo << codigoTripulante << "," << nomeTripulante << "," << cargo << "," << telefoneTripulante << "\n";
+
+        cout << "\nTripulante cadastrado com sucesso! CÛdigo: " << codigoTripulante << "\n";
+
+        // Perguntar se deseja continuar
+        cout << "Deseja cadastrar outro tripulante? (1 - Sim, 0 - N„o): ";
+        cin >> continuar;
+
+    } while (continuar == 1);
+
+    arquivo.close();
+
+    // Atualizar o contador no arquivo
+    ofstream arquivoContador("contadorCodigoTripulacao.txt");
+    if (arquivoContador.is_open()) {
+        arquivoContador << contadorCodigoTripulacao;
+        arquivoContador.close();
+    }
+
+    return 0;
+}
+
+
 
 class Voo {
 private:
@@ -564,99 +435,174 @@ private:
     double tarifa;
 
 public:
-    void criarInformacoes(const std::string& nomeArquivo) {
-        std::cout << "Digite o c√≥digo do voo: ";
-        std::cin >> codigoVoo;
+    void criarInformacoes(const string& nomeArquivo) {
+    static int contadorCodigoVoo = 2000; // CÛdigo inicial para voos
+    static int contadorCodigoAviao = 100; // CÛdigo inicial para aviıes
 
-        std::cout << "Digite a data (DD-MM-AAAA): ";
-        std::cin >> data;
-
-        std::cout << "Digite a hora (HH:MM): ";
-        std::cin >> hora;
-
-        std::cout << "Digite a origem: ";
-        std::cin >> origem;
-
-        std::cout << "Digite o destino: ";
-        std::cin >> destino;
-
-        std::cout << "Digite o c√≥digo do avi√£o: ";
-        std::cin >> codigoAviao;
-
-        std::cout << "Digite o c√≥digo do piloto (digite 0 se n√£o houver piloto): ";
-        std::cin >> codigoPiloto;
-
-        if (codigoPiloto == "0") {
-            codigoPiloto.clear();  // Se o c√≥digo do piloto for 0, considera que n√£o h√° piloto
-        }
-
-        std::cout << "Digite o c√≥digo do copiloto (digite 0 se n√£o houver copiloto): ";
-        std::cin >> codigoCopiloto;
-
-        if (codigoCopiloto == "0") {
-            codigoCopiloto.clear();  // Se o c√≥digo do copiloto for 0, considera que n√£o h√° copiloto
-        }
-
-        std::cout << "Digite o c√≥digo do comiss√°rio: ";
-        std::cin >> codigoComissario;
-
-        status = (!codigoPiloto.empty() && !codigoCopiloto.empty());
-
-        std::cout << "Status do voo definido como: " << (status ? "Ativo" : "Inativo") << std::endl;
-
-        std::cout << "Digite a tarifa: ";
-        std::cin >> tarifa;
-
-        cadastrarVoo(nomeArquivo);
-
+    // Ler contadores existentes dos arquivos, se disponÌveis
+    ifstream arquivoLeitura("contadorCodigoVoo.txt");
+    if (arquivoLeitura.is_open()) {
+        arquivoLeitura >> contadorCodigoVoo;
+        arquivoLeitura.close();
     }
 
-    //M√©todo para ver o status do voo, utilizamos isso para reservar o voo
-    bool getstatus () const {
-    return status;
+    ifstream arquivoLeituraAviao("contadorCodigoAviao.txt");
+    if (arquivoLeituraAviao.is_open()) {
+        arquivoLeituraAviao >> contadorCodigoAviao;
+        arquivoLeituraAviao.close();
     }
 
-    // M√©todo para cadastrar voo em um arquivo
-    void cadastrarVoo(const std::string& nomeArquivo) {
-        std::ifstream arquivoVerificar(nomeArquivo);
-        bool arquivoExiste = arquivoVerificar.is_open();
-        arquivoVerificar.close();
+    string data, hora, origem, destino;
+    int codigoPiloto = 0, codigoCopiloto = 0, codigoComissario = 0;
+    double tarifa;
+    bool pilotoValido = false, copilotoValido = false, comissarioValido = false;
 
-        std::ofstream arquivo(nomeArquivo, std::ios::app); /* flags, escrever ao final do arquivo sem sobrescrever */
-        if (arquivo.is_open()) {
-            if (!arquivoExiste) {
-                arquivo << "C√≥digo do Voo,Data,Hora,Origem,Destino,C√≥digo do Avi√£o,C√≥digo do Piloto,"
-                        << "C√≥digo do Copiloto,C√≥digo do Comiss√°rio,Status, Tarifa\n";
-            }
-            arquivo << codigoVoo << "," << data << "," << hora << "," << origem << "," << destino << ","
-                    << codigoAviao << "," << (codigoPiloto.empty() ? "Nenhum" : codigoPiloto) << ","
-                    << (codigoCopiloto.empty() ? "Nenhum" : codigoCopiloto) << "," << codigoComissario << ","
-                    << (status ? "Ativo" : "Inativo") << "," << tarifa << "\n";
-            std::cout << "Voo cadastrado com sucesso no arquivo.\n";
+    cout << "---------- Cadastro de Voo ----------\n";
 
-            /* se o copiloto ou piloto estiverem vazios, escreve nenhum */
-            /* status ? true : false */
-        } else {
-            std::cerr << "Erro ao abrir o arquivo para cadastro.\n";
-        }
+    // Gerar cÛdigo do voo
+    int codigoVoo = contadorCodigoVoo++;
+    cout << "CÛdigo do voo gerado automaticamente: " << codigoVoo << "\n";
+
+    // Gerar cÛdigo do avi„o
+    int codigoAviao = contadorCodigoAviao++;
+    cout << "CÛdigo do avi„o gerado automaticamente: " << codigoAviao << "\n";
+
+    // Entrada de data, hora, origem e destino
+    cout << "Digite a data (DD-MM-AAAA): ";
+    cin >> data;
+
+    cout << "Digite a hora (HH:MM): ";
+    cin >> hora;
+
+    cout << "Digite a origem: ";
+    cin >> origem;
+
+    cout << "Digite o destino: ";
+    cin >> destino;
+
+    // Validar cÛdigo do piloto
+do {
+    cout << "Digite o cÛdigo do piloto: ";
+    cin >> codigoPiloto;
+
+    // Verifica se a entrada foi inv·lida
+    if (cin.fail()) {
+        cin.clear(); // Limpa o estado de erro
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignora qualquer entrada residual
+        cout << "Entrada inv·lida. Digite um n˙mero v·lido.\n";
+        continue; // Volta ao inÌcio do loop para pedir novamente o cÛdigo
     }
 
-    // M√©todo criado para verificar se estava funcionando
-    void abrirArquivo(const std::string& nomeArquivo) {
-        std::ifstream arquivo(nomeArquivo);
-        if (arquivo.is_open()) {
-            std::string linha;
-            std::cout << "Voos cadastrados no arquivo:\n";
-            while (std::getline(arquivo, linha)) {
-                std::cout << linha << std::endl;
-            }
+    pilotoValido = validarTripulante(codigoPiloto, "Piloto");
+
+    if (!pilotoValido) {
+        cout << "Erro: CÛdigo do piloto inv·lido ou n„o encontrado! Tente novamente.\n";
+    }
+} while (!pilotoValido);
+
+// Validar cÛdigo do copiloto
+do {
+    cout << "Digite o cÛdigo do copiloto: ";
+    cin >> codigoCopiloto;
+
+    if (cin.fail()) {
+        cin.clear(); // Limpa o estado de erro
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignora entrada inv·lida
+        cout << "Entrada inv·lida. Digite um n˙mero v·lido.\n";
+        continue;
+    }
+
+    copilotoValido = validarTripulante(codigoCopiloto, "Copiloto");
+
+    if (!copilotoValido) {
+        cout << "Erro: CÛdigo do copiloto inv·lido ou n„o encontrado! Tente novamente.\n";
+    }
+} while (!copilotoValido);
+
+// Validar cÛdigo do comiss·rio
+do {
+    cout << "Digite o cÛdigo do comiss·rio: ";
+    cin >> codigoComissario;
+
+    if (cin.fail()) {
+        cin.clear(); // Limpa o estado de erro
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignora entrada inv·lida
+        cout << "Entrada inv·lida. Digite um n˙mero v·lido.\n";
+        continue;
+    }
+
+    comissarioValido = validarTripulante(codigoComissario, "Comiss·rio");
+
+    if (!comissarioValido) {
+        cout << "Erro: CÛdigo do comiss·rio inv·lido ou n„o encontrado! Tente novamente.\n";
+    }
+} while (!comissarioValido);
+
+
+
+    // Status do voo e tarifa
+    string status = "Ativo";
+    cout << "Digite a tarifa: ";
+    cin >> tarifa;
+
+    // Salvar os dados no arquivo de voos
+    ofstream arquivo(nomeArquivo, ios::app);
+    if (arquivo.is_open()) {
+        arquivo << codigoVoo << "," << data << "," << hora << "," << origem << "," << destino << ","
+                << codigoAviao << "," << codigoPiloto << "," << codigoCopiloto << "," << codigoComissario
+                << "," << status << "," << tarifa << "\n";
+        arquivo.close();
+        cout << "Voo cadastrado com sucesso!\n";
+    } else {
+        cerr << "Erro ao abrir o arquivo de voos para salvar.\n";
+        return;
+    }
+
+    // Atualizar contadores nos arquivos
+    ofstream arquivoVooContador("contadorCodigoVoo.txt");
+    if (arquivoVooContador.is_open()) {
+        arquivoVooContador << contadorCodigoVoo;
+        arquivoVooContador.close();
+    }
+
+    ofstream arquivoAviaoContador("contadorCodigoAviao.txt");
+    if (arquivoAviaoContador.is_open()) {
+        arquivoAviaoContador << contadorCodigoAviao;
+        arquivoAviaoContador.close();
+    }
+}
+
+
+
+bool validarTripulante(int codigo, const string& cargoEsperado) {
+    ifstream arquivo("dadosTripulacao.txt");
+    if (!arquivo.is_open()) {
+        cerr << "Erro ao abrir o arquivo de tripulantes para validaÁ„o.\n";
+        return false;
+    }
+
+    string linha;
+    while (getline(arquivo, linha)) {
+        istringstream ss(linha);
+        string codigoStr, nome, cargo, telefone;
+
+        getline(ss, codigoStr, ',');
+        getline(ss, nome, ',');
+        getline(ss, cargo, ',');
+        getline(ss, telefone, ',');
+
+        if (stoi(codigoStr) == codigo && cargo == cargoEsperado) {
             arquivo.close();
-        } else {
-            std::cerr << "Erro ao abrir o arquivo para leitura.\n";
+            return true;
         }
     }
 
+    arquivo.close();
+    return false;
+}
 };
+
+
 
 class Assento {
 private:
@@ -664,10 +610,11 @@ private:
     string voo;
     string status; // "livre" ou "ocupado"
     string nome;
+    string tipoPessoa; // Novo campo
     int codigo;
 
-    public:
-    Assento() : status("livre"), codigo(0) {}
+public:
+    Assento() : status("livre"), codigo(0), tipoPessoa("N/A") {}
 
     // Getters e Setters
     string getNumero() const { return numero; }
@@ -681,6 +628,9 @@ private:
 
     string getNome() const { return nome; }
     void setNome(const string& nome) { this->nome = nome; }
+
+    string getTipoPessoa() const { return tipoPessoa; }
+    void setTipoPessoa(const string& tipoPessoa) { this->tipoPessoa = tipoPessoa; }
 
     int getCodigo() const { return codigo; }
     void setCodigo(int codigo) { this->codigo = codigo; }
@@ -705,6 +655,7 @@ private:
             getline(ss, assento.voo, ',');
             getline(ss, assento.status, ',');
             getline(ss, assento.nome, ',');
+            getline(ss, assento.tipoPessoa, ',');
             getline(ss, codigoStr);
 
             assento.codigo = codigoStr.empty() ? 0 : stoi(codigoStr);
@@ -726,24 +677,26 @@ private:
 
         for (const auto& assento : assentos) {
             arquivo << assento.numero << "," << assento.voo << "," << assento.status << ",";
-            if (assento.status == "ocupado") {
-                arquivo << assento.nome << "," << assento.codigo;
+            if (assento.getStatus() == "ocupado") {
+                arquivo << assento.nome << "," << assento.tipoPessoa << "," << assento.codigo;
             }
             arquivo << endl;
         }
 
         arquivo.close();
     }
-    };
+};
 
-    // Fun√ß√£o para reservar um assento
+
+
+    // FunÁ„o para reservar um assento
 void reservarAssento() {
-    string numero, voo, nome;
+    string numero, voo, nome, tipoPessoa, cargo;
     int codigo;
 
-    cout << "Digite o n√∫mero do assento: ";
+    cout << "Digite o n˙mero do assento: ";
     cin >> numero;
-    cout << "Digite o c√≥digo do voo: ";
+    cout << "Digite o cÛdigo do voo: ";
     cin >> voo;
 
     vector<Assento> assentos = Assento::carregarAssentos("assentos.txt");
@@ -754,39 +707,73 @@ void reservarAssento() {
                 cout << "Digite seu nome: ";
                 cin.ignore();
                 getline(cin, nome);
-                cout << "Digite seu c√≥digo de usu√°rio: ";
+
+                cout << "Digite seu cÛdigo de usu·rio: ";
                 cin >> codigo;
 
+                cout << "VocÍ È:\n1 - Passageiro\n2 - Tripulante\nEscolha: ";
+                int tipo;
+                cin >> tipo;
+
+                if (tipo == 1) {
+                    tipoPessoa = "Passageiro";
+                } else if (tipo == 2) {
+                    cout << "Qual È seu cargo?\n1 - Piloto\n2 - Copiloto\n3 - Comiss·rio\nEscolha: ";
+                    int opcaoCargo;
+                    cin >> opcaoCargo;
+
+                    switch (opcaoCargo) {
+                        case 1: cargo = "Piloto"; break;
+                        case 2: cargo = "Copiloto"; break;
+                        case 3: cargo = "Comiss·rio"; break;
+                        default:
+                            cout << "OpÁ„o inv·lida! Reserva cancelada.\n";
+                            return;
+                    }
+                    tipoPessoa = cargo;
+                } else {
+                    cout << "OpÁ„o inv·lida! Reserva cancelada.\n";
+                    return;
+                }
+
+                // Atualiza o assento com as novas informaÁıes
                 assento.setStatus("ocupado");
                 assento.setNome(nome);
                 assento.setCodigo(codigo);
+                assento.setTipoPessoa(tipoPessoa);
+
+                // Salvar os dados no arquivo
                 Assento::salvarAssentos("assentos.txt", assentos);
 
-                 // Atualizar pontos de fidelidade
-                atualizarPontosFidelidade(codigo, nome);
+                // Atualizar fidelidade apenas para passageiros
+                if (tipoPessoa == "Passageiro") {
+                    atualizarPontosFidelidade(codigo, nome);
+                }
 
                 cout << "Reserva feita com sucesso!" << endl;
                 return;
             } else {
-                cout << "Erro: Assento j√° est√° ocupado." << endl;
+                cout << "Erro: Assento j· est· ocupado." << endl;
                 return;
             }
         }
     }
 
-    cout << "Erro: Assento ou voo n√£o encontrado." << endl;
+    cout << "Erro: Assento ou voo n„o encontrado." << endl;
 }
 
-//Fun√ß√£o para baixa em reserva
+
+
+//FunÁ„o para baixa em reserva
 void cancelarReserva() {
     string numero, voo;
     int codigo;
 
-    cout << "Digite o n√∫mero do assento: ";
+    cout << "Digite o n˙mero do assento: ";
     cin >> numero;
-    cout << "Digite o c√≥digo do voo: ";
+    cout << "Digite o cÛdigo do voo: ";
     cin >> voo;
-    cout << "Digite seu c√≥digo de usu√°rio: ";
+    cout << "Digite seu cÛdigo de usu·rio: ";
     cin >> codigo;
 
     vector<Assento> assentos = Assento::carregarAssentos("assentos.txt");
@@ -802,29 +789,29 @@ void cancelarReserva() {
                 cout << "Reserva cancelada com sucesso!" << endl;
                 return;
             } else {
-                cout << "Erro: Assento n√£o pertence a este usu√°rio." << endl;
+                cout << "Erro: Assento n„o pertence a este usu·rio." << endl;
                 return;
             }
         }
     }
 
-    cout << "Erro: Assento ou voo n√£o encontrado." << endl;
+    cout << "Erro: Assento ou voo n„o encontrado." << endl;
 }
 
-    // Fun√ß√£o para cadastrar um novo assento
+    // FunÁ„o para cadastrar um novo assento
 void cadastrarAssento() {
     string numero, voo;
-    cout << "Digite o n√∫mero do assento: ";
+    cout << "Digite o n˙mero do assento: ";
     cin >> numero;
-    cout << "Digite o c√≥digo do voo: ";
+    cout << "Digite o cÛdigo do voo: ";
     cin >> voo;
 
     vector<Assento> assentos = Assento::carregarAssentos("assentos.txt");
 
-    // Verificar se o assento j√° existe
+    // Verificar se o assento j· existe
     for (const auto& assento : assentos) {
         if (assento.getNumero() == numero && assento.getVoo() == voo) {
-            cout << "Erro: Assento j√° cadastrado." << endl;
+            cout << "Erro: Assento j· cadastrado." << endl;
             return;
         }
     }
@@ -883,12 +870,12 @@ void BaixarReserva(string codigoVoo, string numeroAssento) {
     }
 
     Reserva reserva;
-    bool reservaEncontrada = false; // Declara√ß√£o e inicializa√ß√£o da vari√°vel
+    bool reservaEncontrada = false; // DeclaraÁ„o e inicializaÁ„o da vari·vel
 
     while (arquivoLeitura.read(reinterpret_cast<char*>(&reserva), sizeof(Reserva))) {
         if (reserva.getCodigoVoo() == codigoVoo && reserva.getNumeroAssento() == numeroAssento) {
             reservaEncontrada = true;
-            // ... (l√≥gica para remover a reserva)
+            // ... (lÛgica para remover a reserva)
         } else {
             arquivoTemporario.write(reinterpret_cast<const char*>(&reserva), sizeof(Reserva));
         }
@@ -903,7 +890,7 @@ void BaixarReserva(string codigoVoo, string numeroAssento) {
         cout << "Reserva cancelada com sucesso.\n";
     } else {
         remove("reservar_temp.dat");
-        cout << "Reserva n√£o encontrada para este assento e voo.\n";
+        cout << "Reserva n„o encontrada para este assento e voo.\n";
     }
 }
 
@@ -940,117 +927,108 @@ void liberarAssento(const string& numeroAssento) {
     cout << "Assento liberado com sucesso." << endl;
 }
 
-int PesquisarPessoa() {
-    cout << "---------- Pesquisa de Pessoa ----------\n" << endl;
+void pesquisarPessoa() {
+    string termoBusca;
+    cout << "Digite o nome ou cÛdigo da pessoa que deseja buscar: ";
+    cin.ignore();
+    getline(cin, termoBusca);
 
-    int escolha;
-    cout << "Selecione o tipo de pessoa que deseja pesquisar:\n"
-         << "1 - Passageiro\n"
-         << "2 - Tripulante\n"
-         << "Escolha: ";
-    cin >> escolha;
+    // Vari·veis para armazenar detalhes da pessoa encontrada
+    string nome, tipo, telefone;
+    bool encontrado = false;
 
-    if (escolha == 1) {
-        // Pesquisa de Passageiros
-        string termoBusca;
-        cout << "Digite o nome ou c√≥digo do passageiro (ex.: 1234): ";
-        cin.ignore();
-        getline(cin, termoBusca);
+    // Abrir arquivo de passageiros
+    ifstream arquivoPassageiros("dadosPassageiro.txt");
+    if (arquivoPassageiros.is_open()) {
+        string linha;
+        while (getline(arquivoPassageiros, linha)) {
+            if (linha.find(termoBusca) != string::npos) {
+                istringstream ss(linha);
+                string codigo, nomePassageiro, tipoPessoa, telefonePassageiro;
 
-        ifstream arquivo("dadosPassageiro.txt");
-        if (!arquivo.is_open()) {
-            cerr << "Erro ao abrir o arquivo de passageiros!" << endl;
-            return -1;
-        }
+                getline(ss, codigo, ',');
+                getline(ss, nomePassageiro, ',');
+                getline(ss, tipoPessoa, ',');
+                getline(ss, telefonePassageiro, ',');
 
-        string linha, nome, codigo;
-        bool encontrado = false;
+                nome = nomePassageiro;
+                tipo = tipoPessoa;
+                telefone = telefonePassageiro;
 
-        while (getline(arquivo, linha)) {
-            if (linha.find("Nome do Passageiro: ") != string::npos) {
-                nome = linha.substr(20);
-            } else if (linha.find("C√≥digo: ") != string::npos) {
-                codigo = linha.substr(8);
-
-                if (nome.find(termoBusca) != string::npos || codigo.find(termoBusca) != string::npos) {
-                    encontrado = true;
-                    cout << "Nome: " << nome << " | C√≥digo: " << codigo << endl;
-                }
+                encontrado = true;
+                cout << "Passageiro encontrado:\n";
+                cout << "CÛdigo: " << codigo << "\nNome: " << nomePassageiro << "\nTipo: " << tipoPessoa << "\nTelefone: " << telefonePassageiro << "\n";
+                break;
             }
         }
-
-        if (!encontrado) {
-            cout << "Passageiro n√£o encontrado." << endl;
-            arquivo.close();
-            return 0;
-        }
-
-        arquivo.close();
-
-        // Listar voos do passageiro
-        cout << "\nDeseja listar os voos do passageiro? (1 - Sim, 0 - N√£o): ";
-        int listarVoos;
-        cin >> listarVoos;
-
-        if (listarVoos == 1) {
-            ifstream arquivoVoos("voos.txt");
-            if (!arquivoVoos.is_open()) {
-                cerr << "Erro ao abrir o arquivo de voos!" << endl;
-                return -1;
-            }
-
-            cout << "\nVoos associados ao passageiro:\n";
-            while (getline(arquivoVoos, linha)) {
-                if (linha.find(codigo) != string::npos) {
-                    cout << linha << endl;
-                }
-            }
-            arquivoVoos.close();
-        }
-
-    } else if (escolha == 2) {
-        // Pesquisa de Tripulantes
-        string termoBusca;
-        cout << "Digite o nome ou c√≥digo do tripulante (ex.: 1234): ";
-        cin.ignore();
-        getline(cin, termoBusca);
-
-        ifstream arquivo("dadosTripulacao.txt");
-        if (!arquivo.is_open()) {
-            cerr << "Erro ao abrir o arquivo de tripulantes!" << endl;
-            return -1;
-        }
-
-        string linha, nome, codigo;
-        bool encontrado = false;
-
-        while (getline(arquivo, linha)) {
-            if (linha.find("Piloto: ") != string::npos || linha.find("Copiloto: ") != string::npos || linha.find("Comiss√°rio: ") != string::npos) {
-                nome = linha.substr(linha.find(": ") + 2); 
-            } else if (linha.find("C√≥digo: ") != string::npos) {
-                codigo = linha.substr(8); 
-
-                if (nome.find(termoBusca) != string::npos || codigo.find(termoBusca) != string::npos) {
-                    encontrado = true;
-                    cout << "Nome: " << nome << " | C√≥digo: " << codigo << endl;
-                }
-            }
-        }
-
-        if (!encontrado) {
-            cout << "Tripulante n√£o encontrado." << endl;
-        }
-
-        arquivo.close();
-
-    } else {
-        cout << "Op√ß√£o inv√°lida!" << endl;
+        arquivoPassageiros.close();
     }
 
-    return 0;
+    // Se n„o encontrado, verificar nos tripulantes
+    if (!encontrado) {
+        ifstream arquivoTripulacao("dadosTripulacao.txt");
+        if (arquivoTripulacao.is_open()) {
+            string linha;
+            while (getline(arquivoTripulacao, linha)) {
+                if (linha.find(termoBusca) != string::npos) {
+                    istringstream ss(linha);
+                    string codigo, nomeTripulante, cargo, telefoneTripulante;
+
+                    getline(ss, codigo, ',');
+                    getline(ss, nomeTripulante, ',');
+                    getline(ss, cargo, ',');
+                    getline(ss, telefoneTripulante, ',');
+
+                    nome = nomeTripulante;
+                    tipo = cargo;
+                    telefone = telefoneTripulante;
+
+                    encontrado = true;
+                    cout << "Tripulante encontrado:\n";
+                    cout << "CÛdigo: " << codigo << "\nNome: " << nomeTripulante << "\nCargo: " << cargo << "\nTelefone: " << telefoneTripulante << "\n";
+                    break;
+                }
+            }
+            arquivoTripulacao.close();
+        }
+    }
+
+    // Caso n„o encontrado
+    if (!encontrado) {
+        cout << "Nenhuma pessoa encontrada com o termo '" << termoBusca << "'.\n";
+        return;
+    }
+
+    // Perguntar se deseja listar voos associados
+    cout << "\nDeseja listar os voos dessa pessoa? (1 - Sim, 0 - N„o): ";
+    int listarVoos;
+    cin >> listarVoos;
+
+    if (listarVoos == 1) {
+        ifstream arquivoAssentos("assentos.txt");
+        if (!arquivoAssentos.is_open()) {
+            cerr << "Erro ao abrir o arquivo de assentos!" << endl;
+            return;
+        }
+
+        cout << "\nVoos associados:\n";
+        string linha;
+        bool voosEncontrados = false;
+
+        while (getline(arquivoAssentos, linha)) {
+            if (linha.find(nome) != string::npos) {
+                cout << linha << "\n";
+                voosEncontrados = true;
+            }
+        }
+
+        if (!voosEncontrados) {
+            cout << "Nenhum voo encontrado para esta pessoa.\n";
+        }
+
+        arquivoAssentos.close();
+    }
 }
-
-
 
 
 
@@ -1061,7 +1039,7 @@ int escolhaFuncao(int escolha){
   TRIPULACAO tripulacao;
   Voo voo;
   Assento assento;
-    std::string nomeArquivo = "voos.txt";
+  std::string nomeArquivo = "voos.txt";
 
   switch(escolha){
 
@@ -1071,14 +1049,14 @@ int escolhaFuncao(int escolha){
   case 4: cadastrarAssento();break;
   case 5: reservarAssento(); break;
   case 6: cancelarReserva();break;
-  case 7: PesquisarPessoa(); break;
+  case 7: pesquisarPessoa(); break;
   case 8: int codigoConsulta;
-  cout << "Digite o c√≥digo do passageiro: ";
+  cout << "Digite o cÛdigo do passageiro: ";
   cin >> codigoConsulta;
   consultarPontosFidelidade(codigoConsulta);
   break;
   case 0: cout << "Saindo...\nTe vejo em breve..." << endl; return -1;
-  default: cout <<"Op√ß√£o invalida, escolha uma op√ß√£o de 1 a 7"<<endl; return escolha;
+  default: cout <<"OpÁ„o invalida, escolha uma opÁ„o de 1 a 7"<<endl; return escolha;
 
   }
 
@@ -1093,9 +1071,9 @@ void exibirmenu(){
   do {
       cout << "\nBem-vindo(a) ao Voe Tranquilo!\n"
            << "------------------------------------\n"
-           << "O que voc√™ deseja?\n"
+           << "O que vocÍ deseja?\n"
            << "1 - Cadastrar Passageiro\n"
-           << "2 - Cadastrar Tripula√ß√£o\n"
+           << "2 - Cadastrar TripulaÁ„o\n"
            << "3 - Cadastrar Voos\n"
            << "4 - Cadastrar Assento\n"
            << "5 - Fazer Reserva\n"
@@ -1117,6 +1095,6 @@ void exibirmenu(){
 int main(){
     setlocale(LC_ALL, "portuguese");
     exibirmenu();
-
     return 0;
 }
+
