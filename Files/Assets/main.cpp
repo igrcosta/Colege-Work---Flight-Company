@@ -228,6 +228,79 @@ class COMISSARIO{ /// MODIFICOU ND MAS TA FUNCIONANDO ALGO
 
 // ************  --------------  FUNCOES   --------------  ************//
 
+///---------- Fidelidade ----------
+void atualizarPontosFidelidade(int codigoPassageiro, const string& nomePassageiro) {
+    const string nomeArquivo = "Fidelidade.txt";
+    vector<pair<int, pair<string, int>>> fidelidades;
+    bool encontrado = false;
+
+    // Ler dados existentes no arquivo Fidelidade.txt
+    ifstream arquivoEntrada(nomeArquivo);
+    if (arquivoEntrada.is_open()) {
+        string linha;
+        while (getline(arquivoEntrada, linha)) {
+            istringstream ss(linha);
+            int codigo, pontos;
+            string nome;
+            getline(ss, linha, ',');
+            codigo = stoi(linha);
+            getline(ss, nome, ',');
+            ss >> pontos;
+
+            if (codigo == codigoPassageiro) {
+                pontos += 10; // Incrementa 10 pontos
+                encontrado = true;
+            }
+            fidelidades.push_back({codigo, {nome, pontos}});
+        }
+        arquivoEntrada.close();
+    }
+
+    // Adicionar novo passageiro se não encontrado
+    if (!encontrado) {
+        fidelidades.push_back({codigoPassageiro, {nomePassageiro, 10}});
+    }
+
+    // Salvar dados atualizados no arquivo
+    ofstream arquivoSaida(nomeArquivo);
+    if (arquivoSaida.is_open()) {
+        for (const auto& entry : fidelidades) {
+            arquivoSaida << entry.first << "," << entry.second.first << "," << entry.second.second << "\n";
+        }
+        arquivoSaida.close();
+    } else {
+        cerr << "Erro ao abrir o arquivo de fidelidade para escrita." << endl;
+    }
+
+    cout << "Pontos de fidelidade atualizados com sucesso!" << endl;
+}
+
+void consultarPontosFidelidade(int codigoPassageiro) {
+    const string nomeArquivo = "Fidelidade.txt";
+    ifstream arquivo(nomeArquivo);
+    if (arquivo.is_open()) {
+        string linha;
+        while (getline(arquivo, linha)) {
+            istringstream ss(linha);
+            int codigo, pontos;
+            string nome;
+            ss >> codigo;
+            getline(ss, nome, ',');
+            ss >> pontos;
+
+            if (codigo == codigoPassageiro) {
+                cout << "Passageiro: " << nome << "\nPontos de fidelidade: " << pontos << endl;
+                arquivo.close();
+                return;
+            }
+        }
+        arquivo.close();
+        cout << "Passageiro não encontrado no sistema de fidelidade." << endl;
+    } else {
+        cerr << "Erro ao abrir o arquivo de fidelidade." << endl;
+    }
+}
+
 int CadastroPassageiro(class PASSAGEIRO &passageiro) { /// MODIFICOU
 
     static int contadorCodigoPassageiro = 1000;
@@ -272,33 +345,6 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) { /// MODIFICOU
     }
 
     passageiro.setTelefonePassageiro(telefonePassageiro);
-
-    ///---------- Fidelidade ----------
-
-        /*---------- so remover aqui igor ----------
-
-        bool fidelidade;
-        int resposta;
-
-        cout << "O usuário tem pontos de fidelidade? (sim/nao): ";
-        cin >> resposta;
-
-        if (resposta == "sim" || resposta == "SIM") { // IGOR AQUI É SO PARA SABER SE TEM FIDELIDADE, AQUI VC N PRECISA MEXER
-        fidelidade = true;
-    } else if (resposta == "nao" || resposta == "NAO") {
-        fidelidade = false;
-    } else {
-        cout << "Digite 'sim' ou 'nao'.";
-        return -1;
-    }
-
-        if (fidelidade) {
-            // IGOR VC VAI COMEÇAR POR AQUI, CHAMA A SUA FUNCAO, METODO, CLASSE, SEI LA O QUE VC VAI FAZER, QLQR COISA OU DUVIDA SO CHAMAR
-    } else {
-        cout << "Sem pontos de fidelidade, faça o seu primeiro voo para recebe-lo !!!" << endl;
-    }
-
-    ---------- so remover aqui igor ---------- */
 
     ///---------- codigo do passageiro ----------
 
@@ -699,7 +745,7 @@ void reservarAssento() {
     cout << "Digite o código do voo: ";
     cin >> voo;
 
-    vector<Assento> assentos = Assento::carregarAssentos("/File/Assets/data/assentos.txt");
+    vector<Assento> assentos = Assento::carregarAssentos("assentos.txt");
 
     for (auto& assento : assentos) {
         if (assento.getNumero() == numero && assento.getVoo() == voo) {
@@ -714,6 +760,9 @@ void reservarAssento() {
                 assento.setNome(nome);
                 assento.setCodigo(codigo);
                 Assento::salvarAssentos("assentos.txt", assentos);
+
+                 // Atualizar pontos de fidelidade
+                atualizarPontosFidelidade(codigo, nome);
 
                 cout << "Reserva feita com sucesso!" << endl;
                 return;
@@ -909,6 +958,11 @@ int escolhaFuncao(int escolha){
     /*
   case 7: PesquisarPessoa(passageiro,tripulacao); break;
   */
+  case 8: int codigoConsulta;
+  cout << "Digite o código do passageiro: ";
+  cin >> codigoConsulta;
+  consultarPontosFidelidade(codigoConsulta);
+  break;
   case 0: cout << "Saindo...\nTe vejo em breve..." << endl; return -1;
   default: cout <<"Opção invalida, escolha uma opção de 1 a 7"<<endl; return escolha;
 
