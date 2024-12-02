@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <vector>
 #include <sstream>
+#include <map>
 
 using namespace std;
 // ************  --------------  CLASSES   --------------  ************//
@@ -216,7 +217,7 @@ public:
         cin.ignore();
         getline(cin, telefone);
 
-        cout << "Digite o codigo do piloto: ";
+        cout << "Digite o codigo do piloto (ex: 1234): ";
         cin >> codigo;
     }
 
@@ -306,13 +307,13 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) { /// MODIFICOU
     static int contadorCodigoPassageiro = 1000;
     int ficarOuSair;
 
-    ifstream arquivoLeitura("arquivosPassageirosDados\\contadorCodigoPassageiro.txt");
+    ifstream arquivoLeitura("contadorCodigoPassageiro.txt");
     if (arquivoLeitura.is_open()) {
         arquivoLeitura >> contadorCodigoPassageiro;
         arquivoLeitura.close();
     } else {contadorCodigoPassageiro = 1000;}
 
-    ofstream arquivo("arquivosPassageirosDados\\dadosPassageiro.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDEREÇO OU NOME
+    ofstream arquivo("dadosPassageiro.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDEREÇO OU NOME
     if (!arquivo.is_open()) {
         cerr << "Erro ao abrir o arquivo para salvar os passageiros!" << endl;
         return -1;
@@ -383,7 +384,7 @@ int CadastroPassageiro(class PASSAGEIRO &passageiro) { /// MODIFICOU
 
     arquivo.close();
 
-    ofstream arquivoContador("arquivosPassageirosDados\\contadorCodigoPassageiro.txt");
+    ofstream arquivoContador("contadorCodigoPassageiro.txt");
     if (arquivoContador.is_open()) {
         arquivoContador << contadorCodigoPassageiro;
         arquivoContador.close();
@@ -403,13 +404,13 @@ int CadastroTripulacao(TRIPULACAO& tripulacao) { /// MODIFICOU
     string nomePiloto, telefonePiloto;
     static int contadorCodigoTripulacao = 1000;
 
-    ifstream arquivoLeitura("arquivosTripulacaoDados\\contadorCodigoTripulacao.txt");
+    ifstream arquivoLeitura("contadorCodigoTripulacao.txt");
     if (arquivoLeitura.is_open()) {
         arquivoLeitura >> contadorCodigoTripulacao;
         arquivoLeitura.close();
     } else {contadorCodigoTripulacao = 1000;}
 
-    ofstream arquivo("arquivosTripulacaoDados\\dadosTripulacao.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDEREÇO OU NOME
+    ofstream arquivo("dadosTripulacao.txt", ios::app); // CASO O ARQUIVO N ABRE NO TEU PC, BASTA TROCAR O ENDEREÇO OU NOME
     if (!arquivo.is_open()) {
         cerr << "Erro ao abrir o arquivo para salvar os passageiros!" << endl;
         return -1;
@@ -451,7 +452,7 @@ int CadastroTripulacao(TRIPULACAO& tripulacao) { /// MODIFICOU
                 arquivo << "Código: " << "PI - " << tripulacao.getCargo().codigoPiloto << endl;
                 arquivo << " " << endl;
 
-                ofstream arquivoContador("arquivosTripulacaoDados\\contadorCodigoTripulacao.txt");
+                ofstream arquivoContador("contadorCodigoTripulacao.txt");
                 if (arquivoContador.is_open()) {
                     arquivoContador << contadorCodigoTripulacao;
                     arquivoContador.close();
@@ -544,7 +545,7 @@ int CadastroTripulacao(TRIPULACAO& tripulacao) { /// MODIFICOU
 
     arquivo.close();
 
-    ofstream arquivoContador("arquivosTripulacaoDados\\contadorCodigoTripulacao.txt");
+    ofstream arquivoContador("contadorCodigoTripulacao.txt");
     if (arquivoContador.is_open()) {
         arquivoContador << contadorCodigoTripulacao;
         arquivoContador.close();
@@ -939,6 +940,121 @@ void liberarAssento(const string& numeroAssento) {
     cout << "Assento liberado com sucesso." << endl;
 }
 
+int PesquisarPessoa() {
+    cout << "---------- Pesquisa de Pessoa ----------\n" << endl;
+
+    int escolha;
+    cout << "Selecione o tipo de pessoa que deseja pesquisar:\n"
+         << "1 - Passageiro\n"
+         << "2 - Tripulante\n"
+         << "Escolha: ";
+    cin >> escolha;
+
+    if (escolha == 1) {
+        // Pesquisa de Passageiros
+        string termoBusca;
+        cout << "Digite o nome ou código do passageiro (ex.: 1234): ";
+        cin.ignore();
+        getline(cin, termoBusca);
+
+        ifstream arquivo("dadosPassageiro.txt");
+        if (!arquivo.is_open()) {
+            cerr << "Erro ao abrir o arquivo de passageiros!" << endl;
+            return -1;
+        }
+
+        string linha, nome, codigo;
+        bool encontrado = false;
+
+        while (getline(arquivo, linha)) {
+            if (linha.find("Nome do Passageiro: ") != string::npos) {
+                nome = linha.substr(20);
+            } else if (linha.find("Código: ") != string::npos) {
+                codigo = linha.substr(8);
+
+                if (nome.find(termoBusca) != string::npos || codigo.find(termoBusca) != string::npos) {
+                    encontrado = true;
+                    cout << "Nome: " << nome << " | Código: " << codigo << endl;
+                }
+            }
+        }
+
+        if (!encontrado) {
+            cout << "Passageiro não encontrado." << endl;
+            arquivo.close();
+            return 0;
+        }
+
+        arquivo.close();
+
+        // Listar voos do passageiro
+        cout << "\nDeseja listar os voos do passageiro? (1 - Sim, 0 - Não): ";
+        int listarVoos;
+        cin >> listarVoos;
+
+        if (listarVoos == 1) {
+            ifstream arquivoVoos("voos.txt");
+            if (!arquivoVoos.is_open()) {
+                cerr << "Erro ao abrir o arquivo de voos!" << endl;
+                return -1;
+            }
+
+            cout << "\nVoos associados ao passageiro:\n";
+            while (getline(arquivoVoos, linha)) {
+                if (linha.find(codigo) != string::npos) {
+                    cout << linha << endl;
+                }
+            }
+            arquivoVoos.close();
+        }
+
+    } else if (escolha == 2) {
+        // Pesquisa de Tripulantes
+        string termoBusca;
+        cout << "Digite o nome ou código do tripulante (ex.: 1234): ";
+        cin.ignore();
+        getline(cin, termoBusca);
+
+        ifstream arquivo("dadosTripulacao.txt");
+        if (!arquivo.is_open()) {
+            cerr << "Erro ao abrir o arquivo de tripulantes!" << endl;
+            return -1;
+        }
+
+        string linha, nome, codigo;
+        bool encontrado = false;
+
+        while (getline(arquivo, linha)) {
+            if (linha.find("Piloto: ") != string::npos || linha.find("Copiloto: ") != string::npos || linha.find("Comissário: ") != string::npos) {
+                nome = linha.substr(linha.find(": ") + 2); 
+            } else if (linha.find("Código: ") != string::npos) {
+                codigo = linha.substr(8); 
+
+                if (nome.find(termoBusca) != string::npos || codigo.find(termoBusca) != string::npos) {
+                    encontrado = true;
+                    cout << "Nome: " << nome << " | Código: " << codigo << endl;
+                }
+            }
+        }
+
+        if (!encontrado) {
+            cout << "Tripulante não encontrado." << endl;
+        }
+
+        arquivo.close();
+
+    } else {
+        cout << "Opção inválida!" << endl;
+    }
+
+    return 0;
+}
+
+
+
+
+
+
 int escolhaFuncao(int escolha){
 
   PASSAGEIRO passageiro;
@@ -955,9 +1071,7 @@ int escolhaFuncao(int escolha){
   case 4: cadastrarAssento();break;
   case 5: reservarAssento(); break;
   case 6: cancelarReserva();break;
-    /*
-  case 7: PesquisarPessoa(passageiro,tripulacao); break;
-  */
+  case 7: PesquisarPessoa(); break;
   case 8: int codigoConsulta;
   cout << "Digite o código do passageiro: ";
   cin >> codigoConsulta;
