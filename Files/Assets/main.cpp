@@ -475,14 +475,16 @@ public:
     cin >> hora;
 
     cout << "Digite a origem: ";
-    cin >> origem;
+    cin.ignore(); //limpar buffer para evitar bugs
+    getline(cin,origem);
 
     cout << "Digite o destino: ";
-    cin >> destino;
+    cin.ignore(); //limpar buffer para evitar bugs
+    getline(cin,destino);
 
     // Validar código do piloto
 do {
-    cout << "Digite o código do piloto: ";
+    cout << "Digite o código do piloto (Ex: 1234): ";
     cin >> codigoPiloto;
 
     // Verifica se a entrada foi inválida
@@ -502,7 +504,7 @@ do {
 
 // Validar código do copiloto
 do {
-    cout << "Digite o código do copiloto: ";
+    cout << "Digite o código do copiloto (Ex: 4321): ";
     cin >> codigoCopiloto;
 
     if (cin.fail()) {
@@ -521,7 +523,7 @@ do {
 
 // Validar código do comissário
 do {
-    cout << "Digite o código do comissário: ";
+    cout << "Digite o código do comissário (Ex: 2314): ";
     cin >> codigoComissario;
 
     if (cin.fail()) {
